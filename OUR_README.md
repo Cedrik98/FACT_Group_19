@@ -78,9 +78,7 @@ we quickly get access to snellius, we can also try getting acces to a workstatio
 ### Eighth issue
 targetList was not define around line 850 in "goal.py", for now just copied baseList.
 
-
 # TODOs
-
 ## Git
 - Setup simple pipeline to do some linting and typechecking for new code
 - Protect the main branch
@@ -100,3 +98,5 @@ targetList was not define around line 850 in "goal.py", for now just copied base
 
 ## Next steps
 - What do we want to research?
+
+# This is a test
