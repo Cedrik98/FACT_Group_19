@@ -1,0 +1,18 @@
+[project]
+name = "Reproducing XAIFooler"
+version = "0.0.1"
+authors = [
+  {name = "Jakob Kaiser"},
+  {name = "Cedrik Blommestijn"},
+  {name = "Adriana Cabrera"},
+  {name = "Owen de Jong,"},
+]
+description = "This project tries to ...TODO"
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__"]
+reportMissingImports = true
+pythonVersion = "3.8"
