@@ -22,7 +22,8 @@ We can see all options using the command.
 ### First issue
 There were quite some difficulties getting packages to work correctly because no
 versioning, etc. was available. Current versions in "requirements.txt" should
-hopefully work.
+hopefully work. It also seems the newest versions of python do not work, I tried
+several different versions.
 
 ### Second issue
 Not too optimistic about code quality. Mixed use of tabs and spaces, so replaced
@@ -69,8 +70,14 @@ E.g.
 #     continue
 ```
 
-For now these are commented out and with all the above changes it seems the code from
-"main.py" runs, so that is something.
+### Seventh issue
+I need to use a small batchsize (I used 8) though, otherwize
+CUDA runs out of memmory. You will probably need a GPU to run this code, so we should make sure
+we quickly get access to snellius, we can also try getting acces to a workstation in the robolab.
+
+### Eighth issue
+targetList was not define around line 850 in "goal.py", for now just copied baseList.
+
 
 # TODOs
 

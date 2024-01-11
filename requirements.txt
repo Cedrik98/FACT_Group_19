@@ -13,7 +13,7 @@ charset-normalizer==3.3.2
 click==8.0.4
 coloredlogs==15.0.1
 conllu==4.5.3
-contourpy==1.2.0
+contourpy==1.1.1
 cycler==0.12.1
 daal==2024.0.1
 daal4py==2024.0.1
@@ -48,16 +48,16 @@ lemminflect==0.2.3
 lru-dict==1.3.0
 lxml==5.1.0
 MarkupSafe==2.1.3
-matplotlib==3.8.2
+matplotlib==3.7.4
 more-itertools==10.2.0
 mpld3==0.5.10
 mpmath==1.3.0
 multidict==6.0.4
 multiprocess==0.70.15
-networkx==3.2.1
+networkx==3.1
 nltk==3.8.1
 num2words==0.5.13
-numpy==1.26.3
+numpy==1.24.4
 nvidia-cublas-cu12==12.1.3.1
 nvidia-cuda-cupti-cu12==12.1.105
 nvidia-cuda-nvrtc-cu12==12.1.105
@@ -76,7 +76,7 @@ onnxruntime-gpu==1.16.3
 OpenHowNet==2.0
 optimum==1.16.1
 packaging==23.2
-pandas==2.1.4
+pandas==2.0.3
 pillow==10.2.0
 pinyin==0.4.0
 pptree==3.1
@@ -97,7 +97,7 @@ s3transfer==0.10.0
 safetensors==0.4.1
 scikit-learn==1.2.2
 scikit-learn-intelex==2024.0.1
-scipy==1.11.4
+scipy==1.10.1
 segtok==1.5.11
 semver==3.0.2
 sentencepiece==0.1.99
