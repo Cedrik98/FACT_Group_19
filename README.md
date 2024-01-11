@@ -1,9 +1,9 @@
-# Are your explanatios reliable?
+# Are your explanations reliable?
 
 ## Description
-This project aims the reproduct the paper "'Are Your Explanations Reliable?'
+This project aims the reproduce results from the paper *"'Are Your Explanations Reliable?'
 Investigating the Stability of LIME in Explaining Text Classifiers by Marrying
-XAI and Adversarial Attack" [(Bnurger et al., 2023)](https://arxiv.org/pdf/2305.12351.pdf).
+XAI and Adversarial Attack"* [(Bnurger et al., 2023)](https://arxiv.org/pdf/2305.12351.pdf).
 
 ## Setup
 Instructions for installing dependencies.
