@@ -98,5 +98,3 @@ targetList was not define around line 850 in "goal.py", for now just copied base
 
 ## Next steps
 - What do we want to research?
-
-# This is a test
