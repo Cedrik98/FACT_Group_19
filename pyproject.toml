@@ -7,7 +7,7 @@ authors = [
   {name = "Adriana Cabrera"},
   {name = "Owen de Jong,"},
 ]
-description = "This project tries to ...TODO"
+description = "This project tries to reproduce results from the paper 'Are Your Explanations Reliable?' Investigating the Stability of LIME in Explaining Text Classifiers by Marrying XAI and Adversarial Attack"
 readme = "README.md"
 license = {file = "LICENSE"}
 
