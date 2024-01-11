@@ -1,50 +1,62 @@
 import warnings
+
 warnings.filterwarnings("ignore")
 
-import torch
 import math
+
 import numpy
-import scipy 
+import scipy
+import torch
+
 
 def monkeypath_itemfreq(sampler_indices):
-   return zip(*numpy.unique(sampler_indices, return_counts=True))
-scipy.stats.itemfreq=monkeypath_itemfreq
+    return zip(*numpy.unique(sampler_indices, return_counts=True))
+
+
+scipy.stats.itemfreq = monkeypath_itemfreq
+
+import gc
+from timeit import default_timer as timer
 
 import textattack
 import transformers
 
 from utils import *
-from timeit import default_timer as timer
 
-import gc
 gc.collect()
 torch.cuda.empty_cache()
 
 import os
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = 'max_split_size_mb:128'
+
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
 from optimum.onnxruntime import ORTModelForSequenceClassification
+
 from common import *
 
 # model = transformers.AutoModelForSequenceClassification.from_pretrained("textattack/bert-base-uncased-imdb")
-model = ORTModelForSequenceClassification.from_pretrained("cardiffnlp/twitter-roberta-base-hate",
-															export=True,
-															provider="CUDAExecutionProvider",
-															use_io_binding=True)
-tokenizer = transformers.AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-hate", use_fast=True)
+model = ORTModelForSequenceClassification.from_pretrained(
+    "cardiffnlp/twitter-roberta-base-hate",
+    export=True,
+    provider="CUDAExecutionProvider",
+    use_io_binding=True,
+)
+tokenizer = transformers.AutoTokenizer.from_pretrained(
+    "cardiffnlp/twitter-roberta-base-hate", use_fast=True
+)
 
 # model= torch.nn.DataParallel(model)
-model.to('cuda:1')
+model.to("cuda:1")
 
 
 model_wrapper = textattack.models.wrappers.HuggingFaceModelWrapper(model, tokenizer)
 
 dataset = textattack.datasets.HuggingFaceDataset("hate_speech18", split="train")
-categories = ['Non-Hate','Hate']
+categories = ["Non-Hate", "Hate"]
 
 # subset = []
 # for i in range(len(dataset)):
-# 	subset.append(('this movie is really great, I am glad that we went and watch it', 1))
+#     subset.append(('this movie is really great, I am glad that we went and watch it', 1))
 # datasetx = textattack.datasets.Dataset(subset)
 
 # subset = []
@@ -75,13 +87,13 @@ print("---main---")
 # print(timer() - start)
 
 # explanation = explainer.explain_prediction(target_names=categories,
-# 											feature_names=explainer.vec_.get_feature_names_out())
+#                                             feature_names=explainer.vec_.get_feature_names_out())
 
 # def format_explanation_df(explanation):
-# 	df = eli5.format_as_dataframes(explanation)['targets']
-# 	idx = df.apply(lambda x: '<BIAS>' not in x['feature'], axis=1)
-# 	df = df[idx]
-# 	return df
+#     df = eli5.format_as_dataframes(explanation)['targets']
+#     idx = df.apply(lambda x: '<BIAS>' not in x['feature'], axis=1)
+#     df = df[idx]
+#     return df
 
 # print(exDF)
 
@@ -89,7 +101,7 @@ print("---main---")
 
 # print(explainer.vec_)
 # explanation = explainer.explain_prediction(target_names=categories,
-# 											feature_names=explainer.vec_.get_feature_names_out())
+#                                             feature_names=explainer.vec_.get_feature_names_out())
 # exDF = eli5.format_as_dataframes(explanation)['targets']
 # print(exDF)
 
@@ -99,24 +111,26 @@ print("---main---")
 # print(prediction)
 
 
-attack = ADV_XAI_RBO.build(model_wrapper,
-                           categories = categories,
-                           featureSelector = 3, 
-                           limeSamples = 5000,
-                           random_seed = seed,
-                           success_threshold=0.5,
-                           model_batch_size=512,
-                           max_candidates=10
-                            )
+attack = ADV_XAI_RBO.build(
+    model_wrapper,
+    categories=categories,
+    featureSelector=3,
+    limeSamples=5000,
+    random_seed=seed,
+    success_threshold=0.5,
+    model_batch_size=512,
+    max_candidates=10,
+)
 
-attack_args = textattack.AttackArgs(num_examples=1,
-                                    random_seed=seed, 
-                                    log_to_csv=csvName, 
-                                    checkpoint_interval=250, 
-                                    checkpoint_dir="./checkpoints", 
-                                    disable_stdout=False,
-                                    # query_budget=250 #Minimum number of queries, 15% of current document is chosen if it is larger
-                                   )
+attack_args = textattack.AttackArgs(
+    num_examples=1,
+    random_seed=seed,
+    log_to_csv=csvName,
+    checkpoint_interval=250,
+    checkpoint_dir="./checkpoints",
+    disable_stdout=False,
+    # query_budget=250 #Minimum number of queries, 15% of current document is chosen if it is larger
+)
 
 attacker = textattack.Attacker(attack, datasetx, attack_args)
 
@@ -124,56 +138,83 @@ data = []
 start = timer()
 
 from tqdm import tqdm
-for i in tqdm(range(0,1)):
-	try:
-		example = textattack.shared.attacked_text.AttackedText(dataset[i][0].get("text"))
-		# print(example)
-		# example = textattack.shared.attacked_text.AttackedText('this movie is really great, I am glad that we went and watch it')
 
-		output = attacker.attack.goal_function.get_output(example)
-		result = attacker.attack.attack(example, output)
+for i in tqdm(range(0, 1)):
+    try:
+        example = textattack.shared.attacked_text.AttackedText(
+            dataset[i][0].get("text")
+        )
+        # print(example)
+        # example = textattack.shared.attacked_text.AttackedText('this movie is really great, I am glad that we went and watch it')
 
-		# print(attacker.attack.goal_function.)
-		exp1 = attacker.attack.goal_function.generateExplanation(result.original_result.attacked_text.text)
-		exp2 = attacker.attack.goal_function.generateExplanation(result.perturbed_result.attacked_text.text)
+        output = attacker.attack.goal_function.get_output(example)
+        result = attacker.attack.attack(example, output)
 
-		df1 = format_explanation_df(exp1[0])
-		df2 = format_explanation_df(exp2[0])
+        # print(attacker.attack.goal_function.)
+        exp1 = attacker.attack.goal_function.generateExplanation(
+            result.original_result.attacked_text.text
+        )
+        exp2 = attacker.attack.goal_function.generateExplanation(
+            result.perturbed_result.attacked_text.text
+        )
 
-		# print(df1, df1.shape)
-		# print(df2, df2.shape)
+        df1 = format_explanation_df(exp1[0])
+        df2 = format_explanation_df(exp2[0])
 
-		# print(result.__str__(color_method="ansi") + "\n")
+        # print(df1, df1.shape)
+        # print(df2, df2.shape)
 
-		# if len(df1) != len(df2):
-		# 	break
+        # print(result.__str__(color_method="ansi") + "\n")
 
-		targetList = []
-		for i in range(len(df2)):
-			targetList.append(df2.get('feature')[i])
-		baseList = []
-		for i in range(len(df1)):
-			baseList.append(df1.get('feature')[i])
+        # if len(df1) != len(df2):
+        #     break
 
-		rboOutput = attacker.attack.goal_function.RBO(targetList, baseList,p=attacker.attack.goal_function.p_RBO)
-		print("+++++++++++++++++++")
-		print("RBO Score", rboOutput)
-		print("+++++++++++++++++++")
+        targetList = []
+        for i in range(len(df2)):
+            targetList.append(df2.get("feature")[i])
+        baseList = []
+        for i in range(len(df1)):
+            baseList.append(df1.get("feature")[i])
 
-		data.append({'example': example, 'result:': result, 'exp_before': exp1, 'exp_after': exp2, 'rbo': rboOutput, 'log': None})
+        rboOutput = attacker.attack.goal_function.RBO(
+            targetList, baseList, p=attacker.attack.goal_function.p_RBO
+        )
+        print("+++++++++++++++++++")
+        print("RBO Score", rboOutput)
+        print("+++++++++++++++++++")
 
-	except Exception as e:
-		print(e)
-		data.append({'example': example, 'result:': None, 'exp_before': None, 'exp_after': None, 'rbo': None, 'log': e})
+        data.append(
+            {
+                "example": example,
+                "result:": result,
+                "exp_before": exp1,
+                "exp_after": exp2,
+                "rbo": rboOutput,
+                "log": None,
+            }
+        )
+
+    except Exception as e:
+        print(e)
+        data.append(
+            {
+                "example": example,
+                "result:": None,
+                "exp_before": None,
+                "exp_after": None,
+                "rbo": None,
+                "log": e,
+            }
+        )
 
 end = timer()
 
 print(end - start)
 
 import pickle
+
 # with open('log_5000.pickle', 'wb') as handle:
 #     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
 
 
 # import pickle
@@ -183,15 +224,15 @@ import pickle
 # results = attacker.attack_dataset()
 
 # indexGoalFunction = initialIndexGF(model_wrapper,
-# 									categories=categories,
-# 									featureSelector = 2,
-# 									limeSamples = 250,
-# 									random_seed = seed
-								   
-# 									)
+#                                     categories=categories,
+#                                     featureSelector = 2,
+#                                     limeSamples = 250,
+#                                     random_seed = seed
 
-# search_method = GreedyWordSwapWIR_XAI(wir_method="delete", 
-# 									initialIndexGF=indexGoalFunction,
-# 									reverseIndices=True)
+#                                     )
+
+# search_method = GreedyWordSwapWIR_XAI(wir_method="delete",
+#                                     initialIndexGF=indexGoalFunction,
+#                                     reverseIndices=True)
 
 # search_method._get_index_order(datasetx[0])
