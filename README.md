@@ -28,5 +28,11 @@ We can see all possible options and usage using the following command:
 ./run.sh --help
 ```
 
+### Pre-commit hooks
+Run the command:
+```
+pre-commit install
+```
+
 ## List of usefull documentation
 - [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
