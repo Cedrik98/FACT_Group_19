@@ -32,13 +32,7 @@ if __name__ == "__main__":
         "--model",
         "-m",
         type=str,
-        choices=[
-            "textattack/bert-base-uncased-imdb",
-            # "roberta-base-md_gender_bias-saved",
-            # "bert-base-uncased-s2d-saved",
-            # "distilbert-base-uncased-s2d-saved",
-            # "roberta-base-s2d-saved",
-        ],
+        choices=["textattack/bert-base-uncased-imdb"],
         default="textattack/bert-base-uncased-imdb",
         help="The model experiments should be applied to",
     )

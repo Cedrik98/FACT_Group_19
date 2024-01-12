@@ -25,7 +25,7 @@ def generate_attacker(
     custom_seed=None,
     greedy_search=True,
 ):
-    """TODO: move this utility to the attackers folder"""
+    """TODO: move this utility to the attackers folder, add arguments to commandline with better names"""
     attack = ATTACK_RECIPES[args.attack_recipe].build(
         model_wrapper,
         categories=categories,
