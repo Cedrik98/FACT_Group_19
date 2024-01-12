@@ -10,7 +10,7 @@ IMDB_DATASET_NAME = "imdb"
 
 
 def load_imdb_dataset(seed: int) -> Tuple[DatasetDict, Dataset]:
-    """ This function loads the IMDB dataset."""
+    """ This function loads the IMDB dataset. """
     dataset: DatasetDict = cast(DatasetDict, load_dataset(IMDB_DATASET_NAME))
     dataset_train_valid = dataset["train"].train_test_split(
         test_size=0.1,
