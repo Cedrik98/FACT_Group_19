@@ -20,7 +20,9 @@ pythonVersion = "3.8"
 
 [tool.pylint]
 max-line-length = 120
-disable = []
+disable = [
+    "C0415" # imports outside of top-level
+]
 
 [tool.mypy]
 ignore_missing_imports = true
