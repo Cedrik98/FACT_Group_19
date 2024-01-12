@@ -4,29 +4,30 @@ This project tries to reproduce results from the paper
 Explaining Text Classifiers by Marrying XAI and Adversarial Attack.
 """
 import argparse
+from argparse import Namespace
 
-# import torch
-# from textattack.model.wrappers import HuggingFaceDataset, HuggingFaceModelWrapper
+# from xai_fooler.src.dataset import load_test_data
+# from textattack.models.wrappers import HuggingFaceModelWrapper
 # from transformers import AutoModelForSequenceClassification, AutoTokenizer
-#
-#
-# def load_dataset(dataset_name, _):
-#     return "a", "b", "c"
+# import torch
 
 
-def run(arguments):
+def run(args: Namespace):
     """Entry point to the program."""
-    print(arguments)
-    # _, dataset_test, categories = load_dataset(args.dataset, args.seed_dataset)
-    # dataset = HuggingFaceDataset(dataset_test)
-    #
-    # model = AutoModelForSequenceClassification.from_pretrained(args.model)
-    # tokenizer = AutoTokenizer.from_pretrained(args.model)
-    #
-    # device = "cuda" if torch.cuda.is_available() else "cpu"
-    # model.to(device)
-    #
-    # model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
+    from src.dataset import load_test_data
+
+    dataset = load_test_data(args.dataset_name, args.seed)
+    print(dataset)
+    print(args)
+
+
+# model = AutoModelForSequenceClassification.from_pretrained(args.model)
+# tokenizer = AutoTokenizer.from_pretrained(args.model)
+#
+# device = "cuda" if torch.cuda.is_available() else "cpu"
+# model.to(device)
+#
+# model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
 
 
 if __name__ == "__main__":
@@ -38,20 +39,27 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model",
         "-m",
-        required=False,
-        default="textattack/bert-base-uncased-imdb",
+        type=str,
         choices=[
             "textattack/bert-base-uncased-imdb",
-            # "distilbert-base-uncased-imdb-saved",
-            # "bert-base-uncased-imdb-saved",
-            # "roberta-base-imdb-saved",
-            # "distilbert-base-uncased-md_gender_bias-saved",
-            # "bert-base-uncased-md_gender_bias-saved",
             # "roberta-base-md_gender_bias-saved",
             # "bert-base-uncased-s2d-saved",
             # "distilbert-base-uncased-s2d-saved",
             # "roberta-base-s2d-saved",
         ],
+        default="textattack/bert-base-uncased-imdb",
+        help="The model experiments should be applied to",
+    )
+    parser.add_argument(
+        "--dataset-name",
+        "-dn",
+        type=str,
+        choices=["imdb"],
+        default="imdb",
+        help="The name of the dataset to use",
+    )
+    parser.add_argument(
+        "--seed", "-s", type=int, default=42, help="The seed to use for reproducability"
     )
 
     run(parser.parse_args())

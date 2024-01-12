@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 We can see all possible options and usage using the following command:
 ```
-python src/main.py --help
+./run.sh --help
 ```
 
 ## List of usefull documentation
