@@ -20,8 +20,6 @@ def run(args: Namespace):
     print(dataset)
     print(args)
 
-    a = 4
-
 
 # model = AutoModelForSequenceClassification.from_pretrained(args.model)
 # tokenizer = AutoTokenizer.from_pretrained(args.model)
