@@ -111,7 +111,7 @@ s3transfer==0.10.0
 safetensors==0.4.1
 scikit-learn==1.2.2
 scikit-learn-intelex==2024.0.1
-scipy==1.10.1
+scipy==1.8.0
 segtok==1.5.11
 semver==3.0.2
 sentencepiece==0.1.99

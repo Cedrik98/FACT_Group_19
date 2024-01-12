@@ -6,34 +6,20 @@ Explaining Text Classifiers by Marrying XAI and Adversarial Attack.
 import argparse
 from argparse import Namespace
 
+# TODO:
+# - Train model vs xaifooler stuff
+# - Clean everything in attack_recipes folder
+
 
 def run(args: Namespace):
     """Entry point to the program."""
-    # These import are here because they are very slow. This means that they
+    # This import is here because it is very slow. This means that it
     # would take a long time loading even when just using the -h flag. To
-    # prevent this they are not loaded in at the top-level.
-    import torch
-    from textattack.models.wrappers import HuggingFaceModelWrapper
-    from transformers import AutoModelForSequenceClassification, AutoTokenizer
+    # prevent this it is not loaded in at the top-level.
 
-    from src.dataset import load_test_data
+    from src.temp import run_experiments
 
-    # Load only the test dataset
-    dataset = load_test_data(args.dataset_name, args.seed)
-
-    # Setup model and tokenizer
-    model = AutoModelForSequenceClassification.from_pretrained(args.model)
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
-
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model.to(device)
-
-    model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
-
-    # TODO:
-    # - Functionality from run() might need to be extracted.
-    # - There needs to be a differentiation between running and training.
-    print(dataset, model_wrapper)
+    run_experiments(args)
 
 
 if __name__ == "__main__":
@@ -66,6 +52,21 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--seed", "-s", type=int, default=42, help="The seed to use for reproducability"
+    )
+    parser.add_argument(
+        "--number-of-samples",
+        "-nof",
+        type=int,
+        default=100,
+        help="The number of datapoints that should be used",
+    )
+    parser.add_argument(
+        "--attack-recipe",
+        "-pm",
+        type=str,
+        choices=["random"],
+        default="random",
+        help="The method for generating new samples from the base sample",
     )
 
     run(parser.parse_args())

@@ -4,13 +4,14 @@ from typing import Tuple, cast
 from datasets import load_dataset
 from datasets.arrow_dataset import Dataset
 from datasets.dataset_dict import DatasetDict
-from textattack.datasets import HuggingFaceDataset
+
+# from textattack.datasets import HuggingFaceDataset
 
 IMDB_DATASET_NAME = "imdb"
 
 
 def load_imdb_dataset(seed: int) -> Tuple[DatasetDict, Dataset]:
-    """ This function loads the IMDB dataset. """
+    """This function loads the IMDB dataset."""
     dataset: DatasetDict = cast(DatasetDict, load_dataset(IMDB_DATASET_NAME))
     dataset_train_valid = dataset["train"].train_test_split(
         test_size=0.1,
@@ -42,4 +43,6 @@ def load_test_data(dataset_name: str, seed: int):
     This function loads just the test data of a dataset as a HuggingFaceDataset
     """
     _, test_data = load_data(dataset_name, seed)
-    return HuggingFaceDataset(test_data)
+    # return HuggingFaceDataset(test_data)
+    # Seems the do not use the utility from the HuggingFaceDataset class
+    return test_data
