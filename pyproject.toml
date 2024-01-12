@@ -16,7 +16,7 @@ license = {file = "LICENSE"}
 [tool.pyright]
 exclude = ["**/__pycache__"]
 reportMissingImports = true
-pythonVersion = "3.8"
+pythonVersion = "3.8.17"
 
 [tool.pylint]
 max-line-length = 120
