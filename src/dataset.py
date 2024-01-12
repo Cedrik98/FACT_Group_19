@@ -10,7 +10,7 @@ IMDB_DATASET_NAME = "imdb"
 
 
 def load_imdb_dataset(seed: int) -> Tuple[DatasetDict, Dataset]:
-    """This function loads the IMDB dataset."""
+    """ This function loads the IMDB dataset."""
     dataset: DatasetDict = cast(DatasetDict, load_dataset(IMDB_DATASET_NAME))
     dataset_train_valid = dataset["train"].train_test_split(
         test_size=0.1,
@@ -32,14 +32,14 @@ def load_data(dataset_name: str, seed: int) -> Tuple[DatasetDict, Dataset]:
     if dataset_name == IMDB_DATASET_NAME:
         return load_imdb_dataset(seed=seed)
 
-    # Other dataset can be added below
+    # Other datasets can be added below
 
     raise ValueError(f"No dataset: {dataset_name}")
 
 
 def load_test_data(dataset_name: str, seed: int):
     """
-    This function loads jsut the test data of a dataset as a HuggingFaceDataset
+    This function loads just the test data of a dataset as a HuggingFaceDataset
     """
     _, test_data = load_data(dataset_name, seed)
     return HuggingFaceDataset(test_data)
