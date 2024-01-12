@@ -6,28 +6,34 @@ Explaining Text Classifiers by Marrying XAI and Adversarial Attack.
 import argparse
 from argparse import Namespace
 
-# from xai_fooler.src.dataset import load_test_data
-# from textattack.models.wrappers import HuggingFaceModelWrapper
-# from transformers import AutoModelForSequenceClassification, AutoTokenizer
-# import torch
-
 
 def run(args: Namespace):
     """Entry point to the program."""
+    # These import are here because they are very slow. This means that they
+    # would take a long time loading even when just using the -h flag. To
+    # prevent this they are not loaded in at the top-level.
+    import torch
+    from textattack.models.wrappers import HuggingFaceModelWrapper
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
     from src.dataset import load_test_data
 
+    # Load only the test dataset
     dataset = load_test_data(args.dataset_name, args.seed)
-    print(dataset)
-    print(args)
 
+    # Setup model and tokenizer
+    model = AutoModelForSequenceClassification.from_pretrained(args.model)
+    tokenizer = AutoTokenizer.from_pretrained(args.model)
 
-# model = AutoModelForSequenceClassification.from_pretrained(args.model)
-# tokenizer = AutoTokenizer.from_pretrained(args.model)
-#
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-# model.to(device)
-#
-# model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
+
+    model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
+
+    # TODO:
+    # - Functionality from run() might need to be extracted.
+    # - There needs to be a differentiation between running and training.
+    print(dataset, model_wrapper)
 
 
 if __name__ == "__main__":
