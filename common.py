@@ -114,7 +114,7 @@ def load_args():
     parser.add_argument("--text-col", type=str, default="text")
     # parser.add_argument('--split', type=str, default="train")
     parser.add_argument("--device", type=str, default="cuda")
-    parser.add_argument("--batch-size", type=int, default=512)
+    parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--max-candidate", type=int, default=10)
     parser.add_argument("--success-threshold", type=float, default=0.5)
     parser.add_argument("--rbo-p", type=float, default=0.8)
@@ -276,4 +276,3 @@ def generate_explanation_single(
         return explainer, explanation, prediction, probability
 
     return (explanation, prediction, probability)
-
