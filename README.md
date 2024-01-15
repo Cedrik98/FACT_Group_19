@@ -8,6 +8,8 @@ XAI and Adversarial Attack"* [(Bnurger et al., 2023)](https://arxiv.org/pdf/2305
 ## Setup
 Instructions for installing dependencies.
 
+Make sure you are using python 3.8.17, [pyenv](https://github.com/pyenv/pyenv) can be used to manage python versions.
+
 Make a virtual environment.
 ```
 python -m venv venv
