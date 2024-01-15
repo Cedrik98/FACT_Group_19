@@ -62,5 +62,13 @@ if __name__ == "__main__":
         default="random",
         help="The method for generating new samples from the base sample",
     )
+    parser.add_argument("--top-n", type=int, default=10, help="Top N features to select")
+    parser.add_argument("--lime-sr", type=int, default=100, help="LIME sample rate")
+    parser.add_argument("--success-threshold", type=float, default=0.5, help="Threshold for determining the success of the perturbation")
+    parser.add_argument("--batch-size", type=int, default=32, help="Batch size for model processing during the attack")
+    parser.add_argument("--max-candidate", type=int, default=50, help="Maximum number of candidates")
+    parser.add_argument("--modify-rate", type=float, default=0.2, help="Rate of modification")
+    parser.add_argument("--rbo-p", type=float, default=1.0, help="Rank Biased Overlap parameter")
+    parser.add_argument("--similarity-measure", type=str, default="cosine", help="Similarity measure to use")
 
     run(parser.parse_args())
