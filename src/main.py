@@ -1,75 +1,77 @@
-"""
-This project tries to reproduce results from the paper
-'Are Your Explanations Reliable?' Investigating the Stability of LIME in
-Explaining Text Classifiers by Marrying XAI and Adversarial Attack.
-"""
-import argparse
-from argparse import Namespace
+# import warnings
+# warnings.filterwarnings("ignore")
 
+import torch
+import math
+import numpy
+import scipy 
 
-# TODO:
-# - Train model vs xaifooler stuff
-# - Clean everything in attack_recipes folder
+def monkeypath_itemfreq(sampler_indices):
+	return zip(*numpy.unique(sampler_indices, return_counts=True))
+scipy.stats.itemfreq=monkeypath_itemfreq
 
+import textattack
+import transformers
 
-def run(args: Namespace):
-    """Entry point to the program."""
-    # This import is here because it is very slow. This means that it
-    # would take a long time loading even when just using the -h flag. To
-    # prevent this it is not loaded in at the top-level.
+# from utils import RANDOM_BASELINE_Attack, ADV_XAI_Attack
+from timeit import default_timer as timer
 
-    from src.temp import run_experiments
+import gc
+gc.collect()
+torch.cuda.empty_cache()
 
-    run_experiments(args)
+import os
 
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = 'max_split_size_mb:24'
+os.environ["TF_GPU_ALLOCATOR"] = 'cuda_malloc_async'
+
+import pickle
+from tqdm import tqdm
+import numpy as np
+import os
+import json
+import time
+
+from argparse import ArgumentParser
+
+from utils.data_loader import *
+from utils.load_model import *
+from utils.file_create import *
+from utils.argparser import *
+from attack_recipes.gen_attacker import *
+from attack_recipes.attack import *
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog="XAIFooler reproduction",
-        usage="TODO",
-    )
+    args = load_args()
+    filename = generate_filename(args)
 
-    parser.add_argument(
-        "--model",
-        "-m",
-        type=str,
-        choices=["textattack/bert-base-uncased-imdb"],
-        default="textattack/bert-base-uncased-imdb",
-        help="The model experiments should be applied to",
-    )
-    parser.add_argument(
-        "--dataset-name",
-        "-dn",
-        type=str,
-        choices=["imdb"],
-        default="imdb",
-        help="The name of the dataset to use",
-    )
-    parser.add_argument(
-        "--seed", "-s", type=int, default=42, help="The seed to use for reproducability"
-    )
-    parser.add_argument(
-        "--number-of-samples",
-        "-nof",
-        type=int,
-        default=100,
-        help="The number of datapoints that should be used",
-    )
-    parser.add_argument(
-        "--attack-recipe",
-        "-pm",
-        type=str,
-        choices=["random"],
-        default="random",
-        help="The method for generating new samples from the base sample",
-    )
-    parser.add_argument("--top-n", type=int, default=10, help="Top N features to select")
-    parser.add_argument("--lime-sr", type=int, default=100, help="LIME sample rate")
-    parser.add_argument("--success-threshold", type=float, default=0.5, help="Threshold for determining the success of the perturbation")
-    parser.add_argument("--batch-size", type=int, default=32, help="Batch size for model processing during the attack")
-    parser.add_argument("--max-candidate", type=int, default=50, help="Maximum number of candidates")
-    parser.add_argument("--modify-rate", type=float, default=0.2, help="Rate of modification")
-    parser.add_argument("--rbo-p", type=float, default=1.0, help="Rank Biased Overlap parameter")
-    parser.add_argument("--similarity-measure", type=str, default="cosine", help="Similarity measure to use")
+    setup_output_environment(filename, args)
 
-    run(parser.parse_args())
+    models = ['distilbert-base-uncased-imdb-saved',
+        'bert-base-uncased-imdb-saved',
+        'roberta-base-imdb-saved',
+        'distilbert-base-uncased-md_gender_bias-saved',
+        'bert-base-uncased-md_gender_bias-saved',
+        'roberta-base-md_gender_bias-saved',
+        'bert-base-uncased-s2d-saved',
+        'distilbert-base-uncased-s2d-saved',
+        'roberta-base-s2d-saved']
+
+    model, tokenizer, model_wrapper = load_model_and_tokenizer(args.model, args.max_length, args.device, models)
+    stopwords = load_stopwords()
+
+    _, dataset_test, categories = load_dataset_custom(args.dataset, args.seed_dataset)
+    dataset = textattack.datasets.HuggingFaceDataset(dataset_test)
+   
+    dataset = dataset._dataset
+    data, categories = process_dataset(dataset, args, stopwords)
+	#---------------------------------------------------
+    outputName = "output"
+    startIndex = 0
+    csvName = outputName + str(startIndex) + "_log.csv"
+    folderName = "outputName" + str(startIndex)
+	#---------------------------------------------------
+    
+
+    attacker = generate_attacker(args, model_wrapper, categories, csvName)
+    results, rbos, sims = perform_attack(data, args, attacker, stopwords, filename)

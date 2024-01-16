@@ -6,6 +6,8 @@ scipy.stats.itemfreq=monkeypath_itemfreq
 import eli5
 import numpy as np
 import pickle
+import os
+import json
 
 def save(results, filename):
 	with open('{}/results.pickle'.format(filename), 'wb') as handle:
@@ -19,6 +21,15 @@ def load(filename):
 	except:
 		pass
 	return results
+
+def setup_output_environment(filename, config_args):
+    try:
+        os.makedirs(filename)
+    except:
+        pass
+
+    with open(f'{filename}/config.json', 'w') as f:
+        json.dump(config_args.__dict__, f, indent=2)
 
 def generate_filename(args):
     if args.method == "xaifooler":
