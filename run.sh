@@ -12,4 +12,4 @@ if [[ $1 == !(train|experiment|evaluate) ]]; then
     exit 1
 fi
 
-python -m src.$1 $@:2
+python -m src.$1 ${@:2}
