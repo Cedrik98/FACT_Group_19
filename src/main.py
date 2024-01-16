@@ -6,6 +6,7 @@ Explaining Text Classifiers by Marrying XAI and Adversarial Attack.
 import argparse
 from argparse import Namespace
 
+
 # TODO:
 # - Train model vs xaifooler stuff
 # - Clean everything in attack_recipes folder

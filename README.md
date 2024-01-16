@@ -38,3 +38,4 @@ pre-commit install
 
 ## List of usefull documentation
 - [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
+- [textattack_example](https://textattack.readthedocs.io/en/latest/2notebook/1_Introduction_and_Transformations.html)
