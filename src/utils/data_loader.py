@@ -6,7 +6,6 @@ def monkeypath_itemfreq(sampler_indices):
 scipy.stats.itemfreq=monkeypath_itemfreq
 
 from datasets import load_dataset
-from argparse import ArgumentParser
 import textattack
 
 def load_dataset_custom(DATASET_NAME, seed):
@@ -59,7 +58,7 @@ def load_dataset_custom(DATASET_NAME, seed):
     return dataset_train_valid, dataset_test, categories
 
 def load_stopwords():
-    import nltk
+    
     from nltk.corpus import stopwords
     return set(stopwords.words('english'))
 
