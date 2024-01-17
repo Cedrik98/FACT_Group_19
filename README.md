@@ -58,6 +58,9 @@ After this you should be able to ssh into sellius using the command `ssh snelliu
 A git repo has already been setup on snellius. Changes can be pulled and pushed
 from that repository.
 
+### Logs
+Logs should be written to ./results/slurm_logs/
+
 ## Requirements
 Ideally we want to run our code in python 3.11.3 as this is officially supported
 by snellius. When upgrading to 3.11.3 make sure when creating the venv use a python
