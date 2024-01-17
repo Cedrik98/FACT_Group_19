@@ -6,13 +6,12 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
 #SBATCH --time=00:30:00
-#SBATCH --output=slurm_output_%A.out
+#SBATCH --output=./results/slurm_logs/slurm_output_install_requirements_%A.out
 
 module purge
 module load 2023
 module load Python/3.11.3-GCCcore-12.3.0
 
-pwd
 cd $HOME/FACT_Group_19/
 python -m venv venv
 source ./venv/bin/activate
