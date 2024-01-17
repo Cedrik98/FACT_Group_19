@@ -8,7 +8,7 @@ XAI and Adversarial Attack"* [(Bnurger et al., 2023)](https://arxiv.org/pdf/2305
 ## Local setup
 Instructions for installing dependencies.
 
-Make sure you are using python 3.8.17, [pyenv](https://github.com/pyenv/pyenv) can be used to manage python versions.
+Make sure you are using Python 3.8.17, [pyenv](https://github.com/pyenv/pyenv) can be used to manage Python versions.
 
 Make a virtual environment.
 ```
@@ -39,8 +39,8 @@ pre-commit install
 ## Using Snellius
 
 ### SSH access to Snellius
-Copy a public ssh key to the server so you do not need to type the password
-everytime you login.
+Copy a public SSH key to the server so you do not need to type the password
+every time you log in.
 ```
 ssh-copy-id -i ~/.ssh/id_ed25519.pub scur1035@@snellius.surf.nl
 ```
@@ -52,18 +52,18 @@ Host snellius
     User <team-user-name>
 ```
 
-After this you should be able to ssh into sellius using the command `ssh snellius`.
+After this, you should be able to ssh into Snellius using the command `ssh snellius`.
 
 ### Git on Snellius
-A git repo has already been setup on snellius. Changes can be pulled and pushed
+A git repo has already been set up on Snellius. Changes can be pulled and pushed
 from that repository.
 
 ### Logs
-Logs should be written to ./results/slurm_logs/
+Logs should be written to `./results/slurm_logs/`
 
 ## Requirements
-Ideally we want to run our code in python 3.11.3 as this is officially supported
-by snellius. When upgrading to 3.11.3 make sure when creating the venv use a python
+Ideally, we want to run our code in Python 3.11.3 as Snellius officially support this.
+When upgrading to 3.11.3 make sure when creating the venv to use a Python
 version 3.11.3. The same requirements.txt should be used.
 
 ### Upgrading python 3.8.17 -> 3.11.3
@@ -72,8 +72,8 @@ regex [docs](https://docs.python.org/3/library/re.html?highlight=re%20global%20f
 
 This can be seen as the `/venv/lib/python3.11/site-packages/eli5/lime/textutils.py` file
 as can be seen in the line: `DEFAULT_TOKEN_PATTERN = r"(?u)\b\w+\b"`. In this line of code
-`(?u)` can simply be removed an all code should run as expected. I wrote a script to automate
+`(?u)` can simply be removed and all code should run as expected. I wrote a script to automate
 this by executing the command `./utils/fix.sh`.
 
-## List of usefull documentation
+## List of useful documentation
 - [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
