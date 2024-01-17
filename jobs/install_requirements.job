@@ -12,6 +12,7 @@ module purge
 module load 2023
 module load Python/3.11.3-GCCcore-12.3.0
 
+pwd
 cd $HOME/FACT_Group_19/
 python -m venv venv
 source ./venv/bin/activate
