@@ -18,12 +18,9 @@ import math
 import numpy as np
 
 from scipy import stats
-from utils.file_create import format_explanation_df
+from src.utils.file_create import format_explanation_df
 
-def SM(list1, list2):
-    coef, p = stats.spearmanr(list1, list2)
-    return 1- max(0, coef)
-
+#-------Code from rbo_calaculator.py---------- 
 def p_generator(p,d):
     def sum_series(p, d):
        # tail recursive helper function
@@ -45,7 +42,8 @@ def find_p(top_n_mass = 0.9):
         if abs(output-top_n_mass) < 0.01:
             print("Set rbo_p = ",p, " for ", output*100, "% mass to be assigned to the top ", n, " features." )
             break
-
+# -----------------------------------------------------
+# ----------Code from rbo_testing.py-------------------
     # compute RBO
 def RBO(list1,list2,p):
     comparisonLength = min(len(list1),len(list2))
@@ -58,6 +56,10 @@ def RBO(list1,list2,p):
         summation += math.pow(p,i+1) * (len(set1&set2) / (i+1))
     return ((len(set(list1)&set(list2))/comparisonLength) * math.pow(p,comparisonLength)) + (((1-p)/p) * summation)
 
+def SM(list1, list2):
+    coef, p = stats.spearmanr(list1, list2)
+    return 1- max(0, coef)
+# -----------------------------------------------------
 
      # compute Center of Mass
 def COM(attacked_text,perturbedExplanation):

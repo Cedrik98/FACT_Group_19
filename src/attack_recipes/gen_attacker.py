@@ -1,7 +1,8 @@
 import numpy as np
 import textattack
-from attack_recipes.adversarial_xai_rbo import *
-from attack_recipes.random_baseline import *
+from src.attack_recipes.adversarial_xai_rbo import *
+from src.attack_recipes.random_baseline import *
+
 
 def build_attacker(ATTACK_CLASS, args,  model_wrapper, categories, csvName, custom_seed=None, greedy_search=True):		
     if args.lime_sr is not None:
@@ -53,11 +54,12 @@ def generate_attacker(args, model_wrapper, categories, csvName,):
         attacker1 = build_attacker(ADV_XAI_Attack, args, model_wrapper, categories, csvName, custom_seed=np.random.choice(1000))
         attacker2 = build_attacker(ADV_XAI_Attack, args, model_wrapper, categories, csvName, custom_seed=np.random.choice(1000))
 
+        return attacker1, attacker2
     elif args.method == "random":
-        attacker = build_attacker(RANDOM_BASELINE_Attack, args, model_wrapper, categories, csvName,  custom_seed=None, greedy_search=True)
+        attacker = build_attacker(RANDOM_BASELINE, args, model_wrapper, categories, csvName,  custom_seed=None, greedy_search=True)
 
     elif args.method == "truerandom":
-        attacker = build_attacker(RANDOM_BASELINE_Attack, args, model_wrapper, categories, csvName, custom_seed=None, greedy_search=False)
+        attacker = build_attacker(RANDOM_BASELINE, args, model_wrapper, categories, csvName, custom_seed=None, greedy_search=False)
 
     elif args.method == 'ga':
         attacker = build_attacker(ADV_XAI_Attack, args, model_wrapper, categories, csvName, custom_seed=None)

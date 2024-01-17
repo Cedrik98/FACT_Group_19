@@ -2,16 +2,13 @@
 # warnings.filterwarnings("ignore")
 
 import torch
-import math
+
 import numpy
 import scipy 
 
 def monkeypath_itemfreq(sampler_indices):
 	return zip(*numpy.unique(sampler_indices, return_counts=True))
 scipy.stats.itemfreq=monkeypath_itemfreq
-
-import textattack
-import transformers
 
 # from utils import RANDOM_BASELINE_Attack, ADV_XAI_Attack
 from timeit import default_timer as timer
@@ -25,20 +22,16 @@ import os
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = 'max_split_size_mb:24'
 os.environ["TF_GPU_ALLOCATOR"] = 'cuda_malloc_async'
 
-import pickle
 from tqdm import tqdm
 import numpy as np
 import os
-import json
-import time
 
-from argparse import ArgumentParser
-
-from utils.data_loader import *
-from utils.load_model import *
-from utils.file_create import *
-from utils.argparser import *
-from attack_recipes.gen_attacker import *
+from src.utils.data_loader import *
+from src.utils.load_model import *
+from src.utils.file_create import *
+from src.utils.argparser import *
+from src.attack_recipes.gen_attacker import *
+from src.evaluation.eval_func import *
 
 def perform_attack(data, args, attacker, stopwords, filename):
     results = []
@@ -79,7 +72,8 @@ def perform_attack(data, args, attacker, stopwords, filename):
 
             try:
                 result = attacker.attack.attack(example, output)
-            except:
+            except Exception as e:
+                print(f"Error encountered: {e}")
                 print("Error generating result")
                 results.append({'example': example, 'result': None, 'exp_before': None, 'exp_after': None, 'rbo': None, 'log': 'prediction mismatched'})
                 if not args.debug:
@@ -108,8 +102,8 @@ def perform_attack(data, args, attacker, stopwords, filename):
             sent1 = example.text
             sent2 = example.text
 
-            exp1 = attacker1.attack.goal_function.generateExplanation(sent1)
-            exp2 = attacker2.attack.goal_function.generateExplanation(sent2)
+            exp1 = attacker[0].attack.goal_function.generateExplanation(sent1)
+            exp2 = attacker[1].attack.goal_function.generateExplanation(sent2)
 
         print("Base prediction", exp1[1])
         print("Attacked prediction", exp2[1])

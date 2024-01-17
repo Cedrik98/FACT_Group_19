@@ -12,9 +12,9 @@ from textattack.constraints.semantics import WordEmbeddingDistance
 from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
 from textattack.transformations import WordSwapEmbedding
 
-from attack_recipes.goals import ADV_XAI_GF
-from attack_recipes.initialgoal import initialIndexGF
-from attack_recipes.search import GreedyWordSwapWIR_XAI
+from src.goals.goals import ADV_XAI_GF
+from src.goals.initialgoal import initialIndexGF
+from src.attack_recipes.search import GreedyWordSwapWIR_XAI
 
 class ADV_XAI_Attack(AttackRecipe):
     """
