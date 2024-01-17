@@ -2,7 +2,7 @@
 # warnings.filterwarnings("ignore")
 
 import torch
-import math
+
 import numpy
 import scipy 
 
@@ -11,7 +11,7 @@ def monkeypath_itemfreq(sampler_indices):
 scipy.stats.itemfreq=monkeypath_itemfreq
 
 import textattack
-import transformers
+
 
 # from utils import RANDOM_BASELINE_Attack, ADV_XAI_Attack
 from timeit import default_timer as timer
@@ -24,15 +24,6 @@ import os
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = 'max_split_size_mb:24'
 os.environ["TF_GPU_ALLOCATOR"] = 'cuda_malloc_async'
-
-import pickle
-from tqdm import tqdm
-import numpy as np
-import os
-import json
-import time
-
-from argparse import ArgumentParser
 
 from src.utils.data_loader import *
 from src.utils.load_model import *

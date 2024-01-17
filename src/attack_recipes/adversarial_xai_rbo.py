@@ -14,7 +14,7 @@ from textattack.transformations import WordSwapEmbedding
 
 from src.goals.goals import ADV_XAI_GF
 from src.goals.initialgoal import initialIndexGF
-from src.attack_recipes.search import GreedyWordSwapWIR_XAI
+from src.search_methods.search import GreedyWordSwapWIR_XAI
 
 class ADV_XAI_Attack(AttackRecipe):
     """

@@ -14,7 +14,7 @@ from textattack.transformations import WordSwapEmbedding
 
 from src.goals.goals import ADV_XAI_GF
 from src.goals.initialgoal import initialIndexGF
-from src.attack_recipes.search_random import GreedyWordSwapWIR_RANDOM
+from src.search_methods.search_random import GreedyWordSwapWIR_RANDOM
 
 class RANDOM_BASELINE(AttackRecipe):
     @staticmethod

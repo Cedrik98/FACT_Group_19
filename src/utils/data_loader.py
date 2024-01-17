@@ -2,7 +2,7 @@
 import scipy 
 import numpy as np
 def monkeypath_itemfreq(sampler_indices):
-   return zip(*numpy.unique(sampler_indices, return_counts=True))
+   return zip(*np.unique(sampler_indices, return_counts=True))
 scipy.stats.itemfreq=monkeypath_itemfreq
 
 from datasets import load_dataset
