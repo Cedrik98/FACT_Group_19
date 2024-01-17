@@ -58,7 +58,17 @@ After this you should be able to ssh into sellius using the command `ssh snelliu
 A git repo has already been setup on snellius. Changes can be pulled and pushed
 from that repository.
 
-### Installing requirements
+## Requirements
+Ideally we want to run our code in python 3.11.3 as this is officially supported
+by snellius.
+
+### Upgrading python 3.8.17 -> 3.11.3
+The current version of eli5 uses a deprecated regex flag (?u) as noted in the
+regex [docs](https://docs.python.org/3/library/re.html?highlight=re%20global%20flag#flags):
+
+This can be seen as the `/venv/lib/python3.11/site-packages/eli5/lime/textutils.py` file
+as can be seen in the line: `DEFAULT_TOKEN_PATTERN = r"(?u)\b\w+\b"`. In this line of code
+`(?u)` can simply be removed an all code should run as expected.
 
 ## List of usefull documentation
 - [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
