@@ -1,0 +1,55 @@
+/gpfs/home1/scur1035/FACT_Group_19
+Collecting absl-py==2.0.0
+  Downloading absl_py-2.0.0-py3-none-any.whl (130 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.2/130.2 kB 20.2 MB/s eta 0:00:00
+Collecting accelerate==0.26.0
+  Downloading accelerate-0.26.0-py3-none-any.whl (270 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 270.7/270.7 kB 52.2 MB/s eta 0:00:00
+Collecting aiohttp==3.9.1
+  Downloading aiohttp-3.9.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 116.3 MB/s eta 0:00:00
+Collecting aiosignal==1.3.1
+  Downloading aiosignal-1.3.1-py3-none-any.whl (7.6 kB)
+Collecting anytree==2.12.1
+  Downloading anytree-2.12.1-py3-none-any.whl (44 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 44.9/44.9 kB 13.7 MB/s eta 0:00:00
+Collecting astroid==3.0.2
+  Downloading astroid-3.0.2-py3-none-any.whl (275 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 275.2/275.2 kB 63.6 MB/s eta 0:00:00
+Collecting astunparse==1.6.3
+  Downloading astunparse-1.6.3-py2.py3-none-any.whl (12 kB)
+Collecting async-timeout==4.0.3
+  Downloading async_timeout-4.0.3-py3-none-any.whl (5.7 kB)
+Collecting attrs==23.2.0
+  Downloading attrs-23.2.0-py3-none-any.whl (60 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.8/60.8 kB 19.3 MB/s eta 0:00:00
+Collecting beautifulsoup4==4.12.2
+  Downloading beautifulsoup4-4.12.2-py3-none-any.whl (142 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 143.0/143.0 kB 40.6 MB/s eta 0:00:00
+Collecting bert-score==0.3.13
+  Downloading bert_score-0.3.13-py3-none-any.whl (61 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.1/61.1 kB 19.1 MB/s eta 0:00:00
+Collecting boto3==1.34.16
+  Downloading boto3-1.34.16-py3-none-any.whl (139 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 139.3/139.3 kB 42.1 MB/s eta 0:00:00
+Collecting botocore==1.34.16
+  Downloading botocore-1.34.16-py3-none-any.whl (11.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.9/11.9 MB 124.3 MB/s eta 0:00:00
+Collecting bpemb==0.3.4
+  Downloading bpemb-0.3.4-py3-none-any.whl (19 kB)
+Collecting cachetools==5.3.2
+  Downloading cachetools-5.3.2-py3-none-any.whl (9.3 kB)
+Collecting certifi==2023.11.17
+  Downloading certifi-2023.11.17-py3-none-any.whl (162 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 162.5/162.5 kB 52.2 MB/s eta 0:00:00
+Collecting charset-normalizer==3.3.2
+  Downloading charset_normalizer-3.3.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (140 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 140.3/140.3 kB 42.8 MB/s eta 0:00:00
+Collecting click==8.0.4
+  Downloading click-8.0.4-py3-none-any.whl (97 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 97.5/97.5 kB 32.4 MB/s eta 0:00:00
+Collecting coloredlogs==15.0.1
+  Downloading coloredlogs-15.0.1-py2.py3-none-any.whl (46 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.0/46.0 kB 15.9 MB/s eta 0:00:00
+Collecting conllu==4.5.3
+  Downloading conllu-4.5.3-py2.py3-none-any.whl (16 kB)
