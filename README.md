@@ -58,6 +58,31 @@ After this, you should be able to ssh into Snellius using the command `ssh snell
 A git repo has already been set up on Snellius. Changes can be pulled and pushed
 from that repository.
 
+### Using Snellius
+All jobfiles are located in `./jobs`, and a job can be run with the command:
+
+`
+sbatch ./jobs/<job-file>
+`
+
+You can see jobs in the queue using the command:
+
+`
+squeue
+`
+ 
+You can then use a JOB-ID to show more information about a job with the command:
+
+`
+scontrol show job <JOB-ID>
+`
+
+Lastly, you can cancel a job using:
+
+`
+scancel <JOB-ID>
+`
+
 ### Logs
 Logs should be written to `./results/slurm_logs/`
 
