@@ -88,7 +88,7 @@ class RANDOM_BASELINE(AttackRecipe):
             skip_text_shorter_than_window=True,
         )
         constraints.append(use_constraint)
-
+        
         # RBO based goal function
         goal_function = ADV_XAI_GF(
             model_wrapper,
@@ -104,7 +104,7 @@ class RANDOM_BASELINE(AttackRecipe):
             similarity_measure=similarity_measure,
             p_RBO=rbo_p,
         )
-
+       
         # This goal function is used for the initial ranking of which indicies to perturb first.
         indexGoalFunction = initialIndexGF(
             model_wrapper,

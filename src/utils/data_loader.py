@@ -66,7 +66,11 @@ def process_dataset(dataset, args, stopwords):
     data = []
     for i in range(len(dataset)):
         text = dataset[i].get(args.text_col)
-        example = textattack.shared.attacked_text.AttackedText(text)
+        if args.debug:
+            example = textattack.shared.attacked_text.AttackedText(text[:30])
+            
+        else:
+            example = textattack.shared.attacked_text.AttackedText(text)
         num_words_non_stopwords = len([w for w in example._words if w not in stopwords])
         if args.min_length and num_words_non_stopwords < args.min_length:
             continue

@@ -44,9 +44,10 @@ def perform_attack(data, args, attacker, stopwords, filename):
             previous_texts = set([result['example'].text for result in previous_results if not result['log']])
             print(previous_texts)
             results = previous_results
-               
+    print(len(data))  
     pbar = tqdm(range(0, len(data)), bar_format='{desc:<20}{percentage:3.0f}%|{bar:10}{r_bar}')
     for i in pbar:
+        
         example, label = data[i]
         print("****TEXT*****")
         print("Text", example.text)
@@ -62,16 +63,18 @@ def perform_attack(data, args, attacker, stopwords, filename):
         # if args.max_length:
         #     text = " ".join(text.split()[:args.max_length])
 
-        if args.method in set(["xaifooler", "random", "truerandom",'ga']):
-            output = attacker.attack.goal_function.get_output(example)
+        if args.method in set(["xaifooler", "random", "truerandom",'ga']):            
+            output = attacker.attack.goal_function.get_output(example)            
             result = None
             
             #certain malformed instances can return empty dataframes
             
             #result = attacker.attack.attack(example, output)
-
+            print("wprks")
             try:
+                
                 result = attacker.attack.attack(example, output)
+                
             except Exception as e:
                 print(f"Error encountered: {e}")
                 print("Error generating result")
@@ -82,7 +85,7 @@ def perform_attack(data, args, attacker, stopwords, filename):
                 
             if result:
                 print(result.__str__(color_method="ansi") + "\n")
-
+                
                 sent1 = result.original_result.attacked_text.text
                 sent2 = result.perturbed_result.attacked_text.text
 
@@ -151,6 +154,6 @@ def perform_attack(data, args, attacker, stopwords, filename):
 
         if not args.debug:
             save(results, filename)
-
+        
     return results, rbos, sims
 				

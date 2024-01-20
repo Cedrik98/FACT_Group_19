@@ -2,9 +2,11 @@ import numpy as np
 import textattack
 from src.attack_recipes.adversarial_xai_rbo import *
 from src.attack_recipes.random_baseline import *
-
+# from src.goals.goals import *
+# from src.goals.initialgoal import *
 
 def build_attacker(ATTACK_CLASS, args,  model_wrapper, categories, csvName, custom_seed=None, greedy_search=True):		
+    
     if args.lime_sr is not None:
         samples = args.lime_sr
     elif args.dataset == 'imdb':
@@ -15,7 +17,7 @@ def build_attacker(ATTACK_CLASS, args,  model_wrapper, categories, csvName, cust
         samples = 2500
     else:
         samples = 5000
-        
+    pbar = None
     attack = ATTACK_CLASS.build(model_wrapper,
                                 categories = categories,
                                 featureSelector = args.top_n, 
@@ -33,7 +35,7 @@ def build_attacker(ATTACK_CLASS, args,  model_wrapper, categories, csvName, cust
                                 crossover = args.crossover,
                                 parent_selection = args.parent_selection
                                 )
-
+    
     attack_args = textattack.AttackArgs(num_examples=1,
                                         random_seed=args.seed if not custom_seed else custom_seed,
                                         log_to_csv=csvName, 

@@ -35,7 +35,8 @@ from textattack.shared.validators import (
 from textattack.transformations import WordSwapEmbedding
 from torch.nn.functional import softmax
 
-from src.attack_recipes.common import *
+from src.utils.file_create import *
+from src.evaluation.eval_func import *
 
 
 class initialIndexGF(ClassificationGoalFunction):

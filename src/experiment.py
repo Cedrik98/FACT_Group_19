@@ -57,8 +57,13 @@ if __name__ == "__main__":
 
     _, dataset_test, categories = load_dataset_custom(args.dataset, args.seed_dataset)
     dataset = textattack.datasets.HuggingFaceDataset(dataset_test)
-   
-    dataset = dataset._dataset
+
+       
+    dataset = dataset._dataset    
+    if args.debug:          
+        dataset = dataset.select(range(100))
+        print(dataset)
+    
     data, categories = process_dataset(dataset, args, stopwords)
 	#---------------------------------------------------
     outputName = "output"
@@ -67,6 +72,9 @@ if __name__ == "__main__":
     folderName = "outputName" + str(startIndex)
 	#---------------------------------------------------
     
-
+    
     attacker = generate_attacker(args, model_wrapper, categories, csvName)
+    
+    print(attacker)
+    
     results, rbos, sims = perform_attack(data, args, attacker, stopwords, filename)

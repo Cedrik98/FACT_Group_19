@@ -60,7 +60,9 @@ class GreedyWordSwapWIR_RANDOM(SearchMethod):
 
         # print('index_order', index_order)
         # print("curr attack", cur_result.attacked_text.words)
-        while i < len(index_order) and not search_over:
+        
+        print(index_order)
+        while i < len(index_order) and not search_over:        
             # self.goal_function.explainer = None
             # self.goal_function.explainer_index = i
 
