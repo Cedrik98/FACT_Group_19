@@ -79,7 +79,9 @@ def run(args: Namespace):
         transformers.logging.set_verbosity_error()
 
     # Load dataset
-    train_valid_dataset, test_dataset = load_data(args.dataset, seed=args.seed)
+    train_valid_dataset, test_dataset = load_data(
+        args.dataset, seed=args.seed, number_of_samples=args.number_of_samples
+    )
     train_dataset = train_valid_dataset["train"]
     valid_dataset = train_valid_dataset["test"]
 
@@ -94,7 +96,9 @@ def run(args: Namespace):
     tokenizer = AutoTokenizer.from_pretrained(args.model, use_fast=True)
 
     # Initialize model
-    categories = train_dataset.unique("label")
+    train_categories = train_dataset.unique("label")
+    valid_categories = valid_dataset.unique("label")
+    categories = train_categories + valid_categories
     model = AutoModelForSequenceClassification.from_pretrained(
         args.model, num_labels=len(categories)
     )
@@ -166,12 +170,18 @@ def run(args: Namespace):
 
 
 if __name__ == "__main__":
+    from src.dataset import DATASETS
+
     parser = ArgumentParser(description="XAIFOOLER Training")
     parser.add_argument(
         "--model",
         "-m",
         type=str,
-        choices=["distilbert-base-uncased"],
+        choices=[
+            "distilbert-base-uncased",
+            "bert-base-uncased",
+            "roberta-base",
+        ],
         default="distilbert-base-uncased",
         help="Model to train",
         required=False,
@@ -180,7 +190,7 @@ if __name__ == "__main__":
         "--dataset",
         "-d",
         type=str,
-        choices=["imdb"],
+        choices=DATASETS,
         default="imdb",
         help="Dataset to train on",
         required=False,
@@ -231,6 +241,13 @@ if __name__ == "__main__":
         type=bool,
         default=False,
         help="Indicates if debuging or not",
+        required=False,
+    )
+    parser.add_argument(
+        "--number-of-samples",
+        type=int,
+        default=30000,
+        help="Number of datapoints sampled from the dataset",
         required=False,
     )
     run(parser.parse_args())
