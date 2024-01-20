@@ -70,7 +70,7 @@ def perform_attack(data, args, attacker, stopwords, filename):
             #certain malformed instances can return empty dataframes
             
             #result = attacker.attack.attack(example, output)
-            print("wprks")
+            
             try:
                 
                 result = attacker.attack.attack(example, output)

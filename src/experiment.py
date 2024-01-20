@@ -61,6 +61,7 @@ if __name__ == "__main__":
        
     dataset = dataset._dataset    
     if args.debug:          
+        dataset = dataset.shuffle()
         dataset = dataset.select(range(100))
         print(dataset)
     
