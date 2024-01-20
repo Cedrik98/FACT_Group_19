@@ -77,3 +77,4 @@ this by executing the command `./utils/fix.sh`.
 
 ## List of useful documentation
 - [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
+- `CUDA_VISIBLE_DEVICES=""` this command can be used to run code on the CPU only.
