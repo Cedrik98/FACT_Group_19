@@ -36,6 +36,14 @@ Run the command:
 pre-commit install
 ```
 
+## Adding datasets and models
+To add a new dataset, a function needs to be added in `src/datasets/datasets.py`,
+It will also need to be added to the command line parser in `src/train.py`. Lastly
+if we want to backup models on Huggingface, a huggingface model needs to be
+insantiated (Ask this to Jakob). Models can be used off hugging face but the same
+applies as for datasets, it will need to be added to the command line and a new
+huggingface model will need to be made.
+
 ## Using Snellius
 
 ### SSH access to Snellius

@@ -3,6 +3,40 @@ from argparse import ArgumentParser, Namespace
 from typing import Any
 
 
+def compute_metrics():
+    """Returns evaluation function."""
+    import numpy as np
+
+    import evaluate
+
+    metric_acc = evaluate.loading.load("accuracy")
+    metric_f1 = evaluate.loading.load("f1")
+
+    def evaluation_func(eval_pred):
+        logits, labels = eval_pred
+        predictions = np.argmax(logits, axis=-1)
+
+        return {
+            "accuracy": metric_acc.compute(predictions=predictions, references=labels),
+            "f1": metric_f1.compute(
+                predictions=predictions, references=labels, average="weighted"
+            ),
+        }
+
+    return evaluation_func
+
+
+def save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained_dir):
+    """Saves model and tokenizer locally and uploads them to huggingface."""
+    # Store trained models
+    tokenizer.save_pretrained(model_trained_path)
+    model.save_pretrained(model_trained_path)
+
+    # Push everything to huggingface
+    tokenizer.push_to_hub(f"JakobKaiser/{model_trained_dir}")
+    model.push_to_hub(f"JakobKaiser/{model_trained_dir}")
+
+
 def run(args: Namespace):
     """Entry point for evaluation."""
     import gc
@@ -18,21 +52,25 @@ def run(args: Namespace):
         TrainingArguments,
     )
 
-    import evaluate
     from src.dataset import load_data
 
     # TODO: look at this
     # import os
     # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
     # from transformers import EarlyStoppingCallback
-
+    #
+    # Collect garbage using garbage collection.
     gc.collect()
     torch.cuda.empty_cache()
 
+    model_checkpoints_dir = Path(f"{args.model}-{args.dataset}-checkpoints")
+    model_trained_dir = Path(f"{args.model}-{args.dataset}-trained")
+    logs_dir = Path(f"{args.model}-{args.dataset}-trained")
+
     # Set paths for storing information
-    model_checkpoints_path = Path(f"./results/{args.model}-{args.dataset}-checkpoints")
-    model_trained_path = Path(f"./results/{args.model}-{args.dataset}-trained")
-    logs_path = Path(f"./results/{args.model}-{args.dataset}-trained")
+    model_checkpoints_path = Path("./results") / model_checkpoints_dir
+    model_trained_path = Path("./results") / model_trained_dir
+    logs_path = Path("./results") / logs_dir
 
     # Change verbosity level to prevent warnings
     if args.debug:
@@ -91,20 +129,6 @@ def run(args: Namespace):
         f"Number of test samples:\t\t{len(tokenized_test_dataset)}"
     )
 
-    metric_acc = evaluate.loading.load("accuracy")
-    metric_f1 = evaluate.loading.load("f1")
-
-    def compute_metrics(eval_pred):
-        logits, labels = eval_pred
-        predictions = np.argmax(logits, axis=-1)
-
-        return {
-            "accuracy": metric_acc.compute(predictions=predictions, references=labels),
-            "f1": metric_f1.compute(
-                predictions=predictions, references=labels, average="weighted"
-            ),
-        }
-
     # Lower these to speedup training
     if args.debug:
         args.epochs = 3
@@ -129,7 +153,7 @@ def run(args: Namespace):
         args=training_args,
         train_dataset=tokenized_train_dataset,
         eval_dataset=tokenized_valid_dataset,
-        compute_metrics=compute_metrics,
+        compute_metrics=compute_metrics(),
         # callbacks = [EarlyStoppingCallback(early_stopping_patience=1)]
     )
     trainer.train()
@@ -138,9 +162,7 @@ def run(args: Namespace):
     result = trainer.evaluate(tokenized_test_dataset)
     print(result)
 
-    # Store trained models
-    tokenizer.save_pretrained(model_trained_path)
-    model.save_pretrained(model_trained_path)
+    save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained_dir)
 
 
 if __name__ == "__main__":
