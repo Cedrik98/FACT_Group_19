@@ -49,10 +49,9 @@ def save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained
 def train(args: Namespace):
     """Trains a model/dataset combination."""
     # TODO: look at this
-    # import os
-    # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
     # from transformers import EarlyStoppingCallback
     import gc
+    import os
     from pathlib import Path
 
     import numpy as np
@@ -73,6 +72,9 @@ def train(args: Namespace):
     # Collect garbage using garbage collection.
     gc.collect()
     torch.cuda.empty_cache()
+
+    # Prevent memory fragmentation
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
     model_checkpoints_dir = Path(f"{args.model}-{args.dataset}-checkpoints")
     model_trained_dir = Path(f"{args.model}-{args.dataset}-trained")
