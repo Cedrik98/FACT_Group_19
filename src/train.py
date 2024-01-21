@@ -184,9 +184,13 @@ def run(args: Namespace):
     import itertools
 
     if args.all:
-        for model, dataset in itertools.product(MODELS, DATASETS):
+        for model, dataset in list(itertools.product(MODELS, DATASETS))[3:]:
             args.model = model
             args.dataset = dataset
+
+            if model = "bert-base-uncased":
+                args.batch_size = 128
+
             train(args)
     else:
         train(args)
