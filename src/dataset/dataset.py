@@ -1,5 +1,5 @@
 """ This module provides utilities to load various datasets. """
-from typing import Tuple, cast
+from typing import List, Tuple, cast
 
 from datasets import ClassLabel, concatenate_datasets, load_dataset
 from datasets.arrow_dataset import Dataset
@@ -18,12 +18,6 @@ DATASETS = [
 IMDB_HF_DATASET_NAME = "imdb"
 MD_GENDER_BIAS_HF_DATASET_NAME = "md_gender_bias"
 SYMPTOM_TO_DIAGNOSIS_HF_DATASET_NAME = "gretelai/symptom_to_diagnosis"
-
-# DATASET_TO_HF_MAPPING = {
-#     IMDB_DATASET_NAME: IMDB_HF_DATASET_NAME,
-#     MD_GENDER_BIAS_DATASET_NAME: MD_GENDER_BIAS_HF_DATASET_NAME,
-#     SYMPTOM_TO_DIAGNOSIS_DATASET_NAME: SYMPTOM_TO_DIAGNOSIS_HF_DATASET_NAME,
-# }
 
 
 def load_imdb_dataset(seed: int, number_of_samples: int) -> Tuple[DatasetDict, Dataset]:
@@ -103,7 +97,7 @@ def load_symptom_to_diagnosis_dataset(seed: int, number_of_samples: int):
 
 def load_data(
     dataset_name: str, seed: int, number_of_samples: int
-) -> Tuple[DatasetDict, Dataset]:
+) -> Tuple[DatasetDict, Dataset, List]:
     """
     This function loads a dataset depending on the passed dataset_name
     and shuffles data using the passed seed.
@@ -111,26 +105,27 @@ def load_data(
     print(f"Loading the {dataset_name} dataset")
 
     if dataset_name == IMDB_DATASET_NAME:
-        return load_imdb_dataset(seed=seed, number_of_samples=number_of_samples)
+        train_valid_dataset, test_dataset = load_imdb_dataset(
+            seed=seed, number_of_samples=number_of_samples
+        )
     elif dataset_name == MD_GENDER_BIAS_DATASET_NAME:
-        return load_md_gender_bias_dataset(
+        train_valid_dataset, test_dataset = load_md_gender_bias_dataset(
             seed=seed, number_of_samples=number_of_samples
         )
     elif dataset_name == SYMPTOM_TO_DIAGNOSIS_DATASET_NAME:
-        return load_symptom_to_diagnosis_dataset(
+        train_valid_dataset, test_dataset = load_symptom_to_diagnosis_dataset(
             seed=seed, number_of_samples=number_of_samples
         )
+        # Other datasets can be added below
+    else:
+        raise ValueError(f"No dataset: {dataset_name}")
 
-    # Other datasets can be added below
+    train_dataset = train_valid_dataset["train"]
+    valid_dataset = train_valid_dataset["test"]
 
-    raise ValueError(f"No dataset: {dataset_name}")
+    train_categories = train_dataset.unique("label")
+    valid_categories = valid_dataset.unique("label")
+    test_categories = test_dataset.unique("label")
+    categories = list(set(train_categories + valid_categories + test_categories))
 
-
-def load_test_data(dataset_name: str, seed: int, number_of_samples: int):
-    """
-    This function loads just the test data of a dataset as a HuggingFaceDataset
-    """
-    _, test_data = load_data(dataset_name, seed, number_of_samples=number_of_samples)
-    # return HuggingFaceDataset(test_data)
-    # Seems the do not use the utility from the HuggingFaceDataset class
-    return test_data
+    return train_valid_dataset, test_dataset, categories

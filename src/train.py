@@ -81,9 +81,9 @@ def train(args: Namespace):
     logs_dir = Path(f"{args.model}-{args.dataset}-trained")
 
     # Set paths for storing information
-    model_checkpoints_path = Path("./results") / model_checkpoints_dir
-    model_trained_path = Path("./results") / model_trained_dir
-    logs_path = Path("./results") / logs_dir
+    model_checkpoints_path = Path("./results/train/") / model_checkpoints_dir
+    model_trained_path = Path("./results/train/") / model_trained_dir
+    logs_path = Path("./results/train/") / logs_dir
 
     # Change verbosity level to prevent warnings
     if args.debug:
@@ -92,7 +92,7 @@ def train(args: Namespace):
         transformers.logging.set_verbosity_error()
 
     # Load dataset
-    train_valid_dataset, test_dataset = load_data(
+    train_valid_dataset, test_dataset, categories = load_data(
         args.dataset, seed=args.seed, number_of_samples=args.number_of_samples
     )
     train_dataset = train_valid_dataset["train"]
@@ -112,9 +112,6 @@ def train(args: Namespace):
         tokenizer.pad_token = tokenizer.eos_token
 
     # Initialize model
-    train_categories = train_dataset.unique("label")
-    valid_categories = valid_dataset.unique("label")
-    categories = train_categories + valid_categories
     model = AutoModelForSequenceClassification.from_pretrained(
         args.model, num_labels=len(categories)
     )

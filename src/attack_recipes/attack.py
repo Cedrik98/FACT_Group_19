@@ -32,9 +32,7 @@ from tqdm import tqdm
 
 from src.attack_recipes.gen_attacker import *
 from src.evaluation.eval_func import *
-from src.utils.data_loader import *
 from src.utils.file_create import *
-from src.utils.load_model import *
 
 
 def perform_attack(data, args, attacker, stopwords, filename):
@@ -195,4 +193,3 @@ def perform_attack(data, args, attacker, stopwords, filename):
             save(results, filename)
 
     return results, rbos, sims
-

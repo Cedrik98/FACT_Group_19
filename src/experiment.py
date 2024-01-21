@@ -1,18 +1,21 @@
-""" This module runs experiments on the fine-tuned language models."""
+"""This module runs experiments on the fine-tuned language models."""
 import gc
+import json
 import os
+import typing
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
 
-import numpy
-import scipy
+import nltk
 import textattack
 import torch
+from datasets.arrow_dataset import Dataset
+from textattack.models.wrappers.huggingface_model_wrapper import HuggingFaceModelWrapper
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 from src.attack_recipes.attack import perform_attack
 from src.attack_recipes.gen_attacker import generate_attacker
-from src.utils.data_loader import load_dataset_custom, load_stopwords, process_dataset
-from src.utils.file_create import generate_filename, setup_output_environment
-from src.utils.load_model import load_model_and_tokenizer
+from src.dataset import DATASETS, load_data, process_experiment_data
 
 MODELS = [
     "distilbert-base-uncased-imdb-saved",
@@ -29,49 +32,64 @@ MODELS = [
 
 def run_experiment(args: Namespace):
     """Runs one experiment with given configuration."""
-    filename = generate_filename(args)
-
-    setup_output_environment(filename, args)
-
-    model, tokenizer, model_wrapper = load_model_and_tokenizer(
-        args.model, args.max_length, args.device, MODELS
+    # Set paths for storing information.
+    output_path = Path(
+        f"./results/experiments/{args.model}-{args.dataset}-{args.method}-{args.similarity_measure}/"
     )
-    stopwords = load_stopwords()
+    text_attack_logging_file = Path("attack_log.csv")
+    text_attack_logging_path = output_path / text_attack_logging_file
 
-    _, dataset_test, categories = load_dataset_custom(args.dataset, args.seed_dataset)
+    # Creates directory if it does not yet exist.
+    if not output_path.exists():
+        os.makedirs(output_path)
+
+    # Dumps all passed arguments into a .json file.
+    with open(output_path / "config.json", "w") as file:
+        json.dump(args.__dict__, file, indent=4)
+
+    # Load model
+    # TODO: Load the correct model!!
+    model = AutoModelForSequenceClassification.from_pretrained(args.model)
+    tokenizer = AutoTokenizer.from_pretrained(args.model)
+
+    if args.max_length:
+        tokenizer.model_max_length = args.max_length
+
+    model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
+
+    # Load all necessary data
+    _, dataset_test, categories = load_data(
+        args.dataset, args.seed_dataset, args.number_of_samples
+    )
     dataset = textattack.datasets.HuggingFaceDataset(dataset_test)
 
-    dataset = dataset._dataset
-
     if args.debug:
-        dataset = dataset.shuffle()
-        dataset = dataset.select(range(100))
-        print(dataset)
+        dataset.shuffle()
+        dataset = dataset.select(range(4))
 
-    data, categories = process_dataset(dataset, args, stopwords)
-    # ---------------------------------------------------
-    outputName = "output"
-    startIndex = 0
-    csvName = outputName + str(startIndex) + "_log.csv"
-    folderName = "outputName" + str(startIndex)
-    # ---------------------------------------------------
+    dataset: Dataset = typing.cast(Dataset, dataset._dataset)  # type: ignore
+    stopwords = set(nltk.corpus.stopwords.words("english"))
 
-    attacker = generate_attacker(args, model_wrapper, categories, csvName)
+    # Preprocess data
+    data, categories = process_experiment_data(dataset, args, stopwords)
+
+    # Generate attacker
+    attacker = generate_attacker(
+        args, model_wrapper, categories, text_attack_logging_path
+    )
 
     print(attacker)
 
-    results, rbos, sims = perform_attack(data, args, attacker, stopwords, filename)
+    # Perform attack
+    results, rbos, sims = perform_attack(
+        data, args, attacker, stopwords, str(output_path)
+    )
 
 
 def run(args: Namespace):
     """Entry point for running all experiments."""
     os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:24"
     os.environ["TF_GPU_ALLOCATOR"] = "cuda_malloc_async"
-
-    def monkeypath_itemfreq(sampler_indices):
-        return zip(*numpy.unique(sampler_indices, return_counts=True))
-
-    scipy.stats.itemfreq = monkeypath_itemfreq
 
     gc.collect()
     torch.cuda.empty_cache()
@@ -87,7 +105,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model", type=str, default="thaile/bert-base-uncased-imdb-saved"
     )
-    parser.add_argument("--dataset", type=str, default="imdb")
+    parser.add_argument("--dataset", type=str, choices=DATASETS, default="imdb")
     parser.add_argument("--label-col", type=str, default="label")
     parser.add_argument("--text-col", type=str, default="text")
     parser.add_argument("--device", type=str, default="cuda")
@@ -133,5 +151,12 @@ if __name__ == "__main__":
             "spearman_weighted",
         ],
         default="rbo",
+    )
+    parser.add_argument(
+        "--number-of-samples",
+        type=int,
+        default=25000,
+        help="Number of datapoints sampled from the dataset",
+        required=False,
     )
     run(parser.parse_args())
