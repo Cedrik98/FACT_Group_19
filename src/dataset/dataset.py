@@ -5,14 +5,25 @@ from datasets import ClassLabel, concatenate_datasets, load_dataset
 from datasets.arrow_dataset import Dataset
 from datasets.dataset_dict import DatasetDict
 
+IMDB_DATASET_NAME = "imdb"
+MD_GENDER_BIAS_DATASET_NAME = "md_gender_bias"
+SYMPTOM_TO_DIAGNOSIS_DATASET_NAME = "symptom_to_diagnosis"
+
+DATASETS = [
+    IMDB_DATASET_NAME,
+    MD_GENDER_BIAS_DATASET_NAME,
+    SYMPTOM_TO_DIAGNOSIS_DATASET_NAME,
+]
+
 IMDB_HF_DATASET_NAME = "imdb"
 MD_GENDER_BIAS_HF_DATASET_NAME = "md_gender_bias"
 SYMPTOM_TO_DIAGNOSIS_HF_DATASET_NAME = "gretelai/symptom_to_diagnosis"
-DATASETS = [
-    IMDB_HF_DATASET_NAME,
-    MD_GENDER_BIAS_HF_DATASET_NAME,
-    SYMPTOM_TO_DIAGNOSIS_HF_DATASET_NAME,
-]
+
+# DATASET_TO_HF_MAPPING = {
+#     IMDB_DATASET_NAME: IMDB_HF_DATASET_NAME,
+#     MD_GENDER_BIAS_DATASET_NAME: MD_GENDER_BIAS_HF_DATASET_NAME,
+#     SYMPTOM_TO_DIAGNOSIS_DATASET_NAME: SYMPTOM_TO_DIAGNOSIS_HF_DATASET_NAME,
+# }
 
 
 def load_imdb_dataset(seed: int, number_of_samples: int) -> Tuple[DatasetDict, Dataset]:
@@ -23,14 +34,14 @@ def load_imdb_dataset(seed: int, number_of_samples: int) -> Tuple[DatasetDict, D
     t_dataset: DatasetDict = cast(DatasetDict, load_dataset(IMDB_HF_DATASET_NAME))
     t_dataset = t_dataset.shuffle(seed=seed)
     dataset = t_dataset["train"]
-    dataset = dataset.select(range(number_of_samples))
+    dataset = dataset.select(range(number_of_samples)[: len(dataset)])
     dataset_train_valid = dataset.train_test_split(
         test_size=0.1,
         stratify_by_column="label",
         shuffle=True,
         seed=seed,
     )
-    dataset_test: Dataset = cast(Dataset, dataset["test"])
+    dataset_test: Dataset = cast(Dataset, t_dataset["test"])
     return dataset_train_valid, dataset_test
 
 
@@ -49,7 +60,9 @@ def load_md_gender_bias_dataset(
         ).filter(lambda example: example["binary_label"] in bi_set),
     )
 
-    t_dataset = t_dataset.shuffle(seed=seed).select(range(number_of_samples))
+    t_dataset = t_dataset.shuffle(seed=seed).select(
+        range(number_of_samples)[: len(t_dataset)]
+    )
     t_dataset = t_dataset.rename_column("binary_label", "label")
     dataset = t_dataset.train_test_split(
         test_size=0.2, stratify_by_column="label", shuffle=True, seed=seed
@@ -97,13 +110,13 @@ def load_data(
     """
     print(f"Loading the {dataset_name} dataset")
 
-    if dataset_name == IMDB_HF_DATASET_NAME:
+    if dataset_name == IMDB_DATASET_NAME:
         return load_imdb_dataset(seed=seed, number_of_samples=number_of_samples)
-    elif dataset_name == MD_GENDER_BIAS_HF_DATASET_NAME:
+    elif dataset_name == MD_GENDER_BIAS_DATASET_NAME:
         return load_md_gender_bias_dataset(
             seed=seed, number_of_samples=number_of_samples
         )
-    elif dataset_name == SYMPTOM_TO_DIAGNOSIS_HF_DATASET_NAME:
+    elif dataset_name == SYMPTOM_TO_DIAGNOSIS_DATASET_NAME:
         return load_symptom_to_diagnosis_dataset(
             seed=seed, number_of_samples=number_of_samples
         )

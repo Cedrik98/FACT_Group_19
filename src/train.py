@@ -2,6 +2,14 @@
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
+from src.dataset import DATASETS
+
+MODELS = [
+    "distilbert-base-uncased",
+    "bert-base-uncased",
+    "roberta-base",
+]
+
 
 def compute_metrics():
     """Returns evaluation function."""
@@ -37,8 +45,12 @@ def save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained
     model.push_to_hub(f"JakobKaiser/{model_trained_dir}")
 
 
-def run(args: Namespace):
-    """Entry point for evaluation."""
+def train(args: Namespace):
+    """Trains a model/dataset combination."""
+    # TODO: look at this
+    # import os
+    # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
+    # from transformers import EarlyStoppingCallback
     import gc
     from pathlib import Path
 
@@ -54,11 +66,9 @@ def run(args: Namespace):
 
     from src.dataset import load_data
 
-    # TODO: look at this
-    # import os
-    # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
-    # from transformers import EarlyStoppingCallback
-    #
+    print(f"\nTRAINING: {args.model} {args.dataset}")
+    print(f"ARGS: {args}\n")
+
     # Collect garbage using garbage collection.
     gc.collect()
     torch.cuda.empty_cache()
@@ -169,9 +179,20 @@ def run(args: Namespace):
     save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained_dir)
 
 
-if __name__ == "__main__":
-    from src.dataset import DATASETS
+def run(args: Namespace):
+    """Entry point for evaluation."""
+    import itertools
 
+    if args.all:
+        for model, dataset in itertools.product(MODELS, DATASETS):
+            args.model = model
+            args.dataset = dataset
+            train(args)
+    else:
+        train(args)
+
+
+if __name__ == "__main__":
     parser = ArgumentParser(description="XAIFOOLER Training")
     parser.add_argument(
         "--model",
@@ -246,8 +267,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--number-of-samples",
         type=int,
-        default=30000,
+        default=25000,
         help="Number of datapoints sampled from the dataset",
+        required=False,
+    )
+    parser.add_argument(
+        "--all",
+        type=bool,
+        default=False,
+        help="Trains all combinations of models/datasets",
         required=False,
     )
     run(parser.parse_args())
