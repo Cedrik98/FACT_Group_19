@@ -188,7 +188,7 @@ def run(args: Namespace):
             args.model = model
             args.dataset = dataset
 
-            if model = "bert-base-uncased":
+            if model == "bert-base-uncased":
                 args.batch_size = 128
 
             train(args)
