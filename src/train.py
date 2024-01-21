@@ -184,7 +184,7 @@ def run(args: Namespace):
     import itertools
 
     if args.all:
-        for model, dataset in list(itertools.product(MODELS, DATASETS))[3:]:
+        for model, dataset in list(itertools.product(MODELS, DATASETS)):
             args.model = model
             args.dataset = dataset
 
