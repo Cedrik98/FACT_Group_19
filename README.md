@@ -36,6 +36,14 @@ Run the command:
 pre-commit install
 ```
 
+## Adding datasets and models
+To add a new dataset, a function needs to be added in `src/datasets/datasets.py`,
+It will also need to be added to the command line parser in `src/train.py`. Lastly
+if we want to backup models on Huggingface, a huggingface model needs to be
+insantiated (Ask this to Jakob). Models can be used off hugging face but the same
+applies as for datasets, it will need to be added to the command line and a new
+huggingface model will need to be made.
+
 ## Using Snellius
 
 ### SSH access to Snellius
@@ -70,7 +78,7 @@ You can see jobs in the queue using the command:
 `
 squeue
 `
- 
+
 You can then use a JOB-ID to show more information about a job with the command:
 
 `
@@ -103,3 +111,4 @@ this by executing the command `./utils/fix.sh`.
 ## List of useful documentation
 - [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
 - [textattack_example](https://textattack.readthedocs.io/en/latest/2notebook/1_Introduction_and_Transformations.html)
+- `CUDA_VISIBLE_DEVICES=""` this command can be used to run code on the CPU only.
