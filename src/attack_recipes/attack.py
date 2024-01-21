@@ -1,37 +1,41 @@
 # import warnings
 # warnings.filterwarnings("ignore")
 
+import numpy
+import scipy
 import torch
 
-import numpy
-import scipy 
 
 def monkeypath_itemfreq(sampler_indices):
-	return zip(*numpy.unique(sampler_indices, return_counts=True))
-scipy.stats.itemfreq=monkeypath_itemfreq
+    return zip(*numpy.unique(sampler_indices, return_counts=True))
+
+
+scipy.stats.itemfreq = monkeypath_itemfreq
+
+import gc
 
 # from utils import RANDOM_BASELINE_Attack, ADV_XAI_Attack
 from timeit import default_timer as timer
 
-import gc
 gc.collect()
 torch.cuda.empty_cache()
 
 import os
 
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = 'max_split_size_mb:24'
-os.environ["TF_GPU_ALLOCATOR"] = 'cuda_malloc_async'
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:24"
+os.environ["TF_GPU_ALLOCATOR"] = "cuda_malloc_async"
 
-from tqdm import tqdm
-import numpy as np
 import os
 
-from src.utils.data_loader import *
-from src.utils.load_model import *
-from src.utils.file_create import *
-from src.utils.argparser import *
+import numpy as np
+from tqdm import tqdm
+
 from src.attack_recipes.gen_attacker import *
 from src.evaluation.eval_func import *
+from src.utils.data_loader import *
+from src.utils.file_create import *
+from src.utils.load_model import *
+
 
 def perform_attack(data, args, attacker, stopwords, filename):
     results = []
@@ -41,18 +45,25 @@ def perform_attack(data, args, attacker, stopwords, filename):
         previous_results = load(filename)
         if previous_results:
             print("LOADED PREVIOUS RESULTS", len(previous_results))
-            previous_texts = set([result['example'].text for result in previous_results if not result['log']])
+            previous_texts = set(
+                [
+                    result["example"].text
+                    for result in previous_results
+                    if not result["log"]
+                ]
+            )
             print(previous_texts)
             results = previous_results
-    print(len(data))  
-    pbar = tqdm(range(0, len(data)), bar_format='{desc:<20}{percentage:3.0f}%|{bar:10}{r_bar}')
+    print(len(data))
+    pbar = tqdm(
+        range(0, len(data)), bar_format="{desc:<20}{percentage:3.0f}%|{bar:10}{r_bar}"
+    )
     for i in pbar:
-        
         example, label = data[i]
         print("****TEXT*****")
         print("Text", example.text)
         print("Label", label)
-        #print("# words (ignore stopwords)", example.num_words_non_stopwords)
+        # print("# words (ignore stopwords)", example.num_words_non_stopwords)
         num_words_non_stopwords = len([w for w in example._words if w not in stopwords])
         print("# words (ignore stopwords)", num_words_non_stopwords)
 
@@ -63,29 +74,37 @@ def perform_attack(data, args, attacker, stopwords, filename):
         # if args.max_length:
         #     text = " ".join(text.split()[:args.max_length])
 
-        if args.method in set(["xaifooler", "random", "truerandom",'ga']):            
-            output = attacker.attack.goal_function.get_output(example)            
+        if args.method in set(["xaifooler", "random", "truerandom", "ga"]):
+            output = attacker.attack.goal_function.get_output(example)
             result = None
-            
-            #certain malformed instances can return empty dataframes
-            
-            #result = attacker.attack.attack(example, output)
-            
+
+            # certain malformed instances can return empty dataframes
+
+            # result = attacker.attack.attack(example, output)
+
             try:
-                
                 result = attacker.attack.attack(example, output)
-                
+
             except Exception as e:
                 print(f"Error encountered: {e}")
                 print("Error generating result")
-                results.append({'example': example, 'result': None, 'exp_before': None, 'exp_after': None, 'rbo': None, 'log': 'prediction mismatched'})
+                results.append(
+                    {
+                        "example": example,
+                        "result": None,
+                        "exp_before": None,
+                        "exp_after": None,
+                        "rbo": None,
+                        "log": "prediction mismatched",
+                    }
+                )
                 if not args.debug:
                     save(results, filename)
                 continue
-                
+
             if result:
                 print(result.__str__(color_method="ansi") + "\n")
-                
+
                 sent1 = result.original_result.attacked_text.text
                 sent2 = result.perturbed_result.attacked_text.text
 
@@ -94,7 +113,16 @@ def perform_attack(data, args, attacker, stopwords, filename):
 
             else:
                 print("PREDICTION MISMATCHED WITH EXPLANTION")
-                results.append({'example': example, 'result': None, 'exp_before': None, 'exp_after': None, 'rbo': None, 'log': 'prediction mismatched'})
+                results.append(
+                    {
+                        "example": example,
+                        "result": None,
+                        "exp_before": None,
+                        "exp_after": None,
+                        "rbo": None,
+                        "log": "prediction mismatched",
+                    }
+                )
                 if not args.debug:
                     save(results, filename)
                 continue
@@ -118,42 +146,53 @@ def perform_attack(data, args, attacker, stopwords, filename):
         print(df1)
         print(df2)
 
-        targetList = df2.get('feature').values
-        baseList = df1.get('feature').values
+        targetList = df2.get("feature").values
+        baseList = df1.get("feature").values
 
         rboOutput = RBO(targetList, baseList, p=args.rbo_p)
         print("rboOutput", rboOutput)
         rbos.append(rboOutput)
 
-        simOutput = generate_comparative_similarities(result.perturbed_result.attacked_text.text,exp1,exp2)
+        simOutput = generate_comparative_similarities(
+            result.perturbed_result.attacked_text.text, exp1, exp2
+        )
         print("Comparative Sims", simOutput)
         sims.append(simOutput)
         # pbar.set_description(f"#{i} | Text: {text[:20]}... | RBO Score: {round(rboOutput,2)}")
-        pbar.set_description('||Average RBO={}||'.format(np.mean(rbos)))
-
+        pbar.set_description("||Average RBO={}||".format(np.mean(rbos)))
 
         pwp = 0
         adjusted_length = 0
-        s1 = result.original_result.attacked_text.text.split() 
+        s1 = result.original_result.attacked_text.text.split()
         s2 = result.perturbed_result.attacked_text.text.split()
 
         for i in range(len(s1)):
-            #print("Comparing: ", s1[i] , s2[i])
-            if s1[i][0].isalpha():  
+            # print("Comparing: ", s1[i] , s2[i])
+            if s1[i][0].isalpha():
                 if s1[i] != s2[i]:
                     pwp += 1
             else:
-                #print(s1[i], " is non alphanumeric")
+                # print(s1[i], " is non alphanumeric")
                 adjusted_length += 1
-        #print(pwp,len(s1),adjusted_length)
-        pwp = pwp / (len(s1)-adjusted_length)
-        print("Perturbed Word Proportion: ",pwp)
+        # print(pwp,len(s1),adjusted_length)
+        pwp = pwp / (len(s1) - adjusted_length)
+        print("Perturbed Word Proportion: ", pwp)
 
-        results.append({'example': example, 'result': result, 'exp_before': exp1, 'exp_after': exp2, 'rbo': rboOutput,'comparativeSims': simOutput, 'log': None,'perturbed_word_proportion': pwp})
-
+        results.append(
+            {
+                "example": example,
+                "result": result,
+                "exp_before": exp1,
+                "exp_after": exp2,
+                "rbo": rboOutput,
+                "comparativeSims": simOutput,
+                "log": None,
+                "perturbed_word_proportion": pwp,
+            }
+        )
 
         if not args.debug:
             save(results, filename)
-        
+
     return results, rbos, sims
-				
+
