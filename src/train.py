@@ -8,6 +8,7 @@ MODELS = [
     "distilbert-base-uncased",
     "bert-base-uncased",
     "roberta-base",
+    "gpt2",
 ]
 
 
@@ -105,6 +106,9 @@ def train(args: Namespace):
     # Initalize tokenizer
     tokenizer = AutoTokenizer.from_pretrained(args.model, use_fast=True)
 
+    if args.model == "gpt2":
+        tokenizer.pad_token = tokenizer.eos_token
+
     # Initialize model
     train_categories = train_dataset.unique("label")
     valid_categories = valid_dataset.unique("label")
@@ -112,6 +116,9 @@ def train(args: Namespace):
     model = AutoModelForSequenceClassification.from_pretrained(
         args.model, num_labels=len(categories)
     )
+
+    if args.model == "gpt2":
+        model.config.pad_token_id = model.config.eos_token_id
 
     # Tokenize the data
     def tokenize_function(examples):
@@ -202,11 +209,7 @@ if __name__ == "__main__":
         "--model",
         "-m",
         type=str,
-        choices=[
-            "distilbert-base-uncased",
-            "bert-base-uncased",
-            "roberta-base",
-        ],
+        choices=MODELS,
         default="distilbert-base-uncased",
         help="Model to train",
         required=False,
