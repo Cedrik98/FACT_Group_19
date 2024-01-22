@@ -62,12 +62,13 @@ def run_experiment(args: Namespace):
         args.dataset, args.seed_dataset, args.number_of_samples
     )
     dataset = textattack.datasets.HuggingFaceDataset(dataset_test)
-
+    dataset: Dataset = typing.cast(Dataset, dataset._dataset)
+    
     if args.debug:
         dataset.shuffle()
         dataset = dataset.select(range(4))
 
-    dataset: Dataset = typing.cast(Dataset, dataset._dataset)  # type: ignore
+     # type: ignore
     stopwords = set(nltk.corpus.stopwords.words("english"))
 
     # Preprocess data

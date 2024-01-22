@@ -26,13 +26,15 @@ import pickle
 
 import numpy as np
 import pandas as pd
+import nltk
+from pathlib import Path
+from argparse import ArgumentParser
 
 from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
 
 from src.utils.file_create import *
-from src.utils.data_loader import *
 from src.evaluation.eval_func import *
-from src.utils.argparser import *
+from src.dataset.dataset import load_data
 
 def check_condition1(result, df1, df2, configs):
 	attacked_text = result.perturbed_result.attacked_text
@@ -58,7 +60,9 @@ def topk_intersection(df1, df2, k=None):
 	return len([x for x in i1 if x in i2])/k
 def eval(args, filename=None, use=None):
 	if not filename:
-		filename = generate_filename(args)
+		filename = Path(
+        f"./results/experiments/{args.model}-{args.dataset}-{args.method}-{args.similarity_measure}/"
+    )
 
 	if not use:
 		use = UniversalSentenceEncoder(
@@ -71,10 +75,10 @@ def eval(args, filename=None, use=None):
 
 	tmp = {}
 	
-	_, dataset_test, categories = load_dataset_custom(args.dataset, args.seed_dataset)
+	_, dataset_test, categories = load_data(args.dataset, args.seed_dataset)
 	dataset = textattack.datasets.HuggingFaceDataset(dataset_test)
 	dataset = dataset._dataset
-	stopwords = load_stopwords()
+	stopwords = set(nltk.corpus.stopwords.words("english"))
 	data = []
 	for i in range(len(dataset)):
 		text = dataset[i].get(args.text_col)
@@ -252,5 +256,65 @@ def eval(args, filename=None, use=None):
 
 if __name__ == "__main__":
     """ Module that performs evaluation on results gathered in experiments. """
-    args = load_args()
-    print(eval(args))
+    parser = ArgumentParser(description="XAIFOOLER Experiment")
+    # All of these should have a help comment!!!
+    parser.add_argument("--lime-sr", type=int, default=None)
+    parser.add_argument("--top-n", type=int, default=3)
+    parser.add_argument(
+        "--model", type=str, default="thaile/bert-base-uncased-imdb-saved"
+    )
+    parser.add_argument("--dataset", type=str, choices=DATASETS, default="imdb")
+    parser.add_argument("--label-col", type=str, default="label")
+    parser.add_argument("--text-col", type=str, default="text")
+    parser.add_argument("--device", type=str, default="cuda")
+    parser.add_argument("--batch-size", type=int, default=8)  # TODO: change back to 512
+    parser.add_argument("--max-candidate", type=int, default=10)
+    parser.add_argument("--success-threshold", type=float, default=0.5)
+    parser.add_argument("--rbo-p", type=float, default=0.8)
+    parser.add_argument("--num", type=int, default=5)
+    parser.add_argument("--modify-rate", type=float, default=0.2)
+    parser.add_argument("--max-length", type=int, default=None)
+    parser.add_argument("--min-length", type=int, default=10)
+    parser.add_argument("--seed", type=int, default=12)
+    parser.add_argument("--seed-dataset", type=int, default=12)
+    parser.add_argument(
+        "--method", type=str, choices=["ga", "random", "truerandom"], default="random"
+    )
+    parser.add_argument("--search-method", type=str, default="default")
+    parser.add_argument(
+        "--crossover", type=str, choices=["uniform", "1point"], default="1point"
+    )
+    parser.add_argument(
+        "--parent-selection",
+        type=str,
+        choices=["roulette", "truncation"],
+        default="truncation",
+    )
+    parser.add_argument("--debug", action="store_true", default=False)
+    parser.add_argument("--rerun", action="store_true", default=False)
+    parser.add_argument(
+        "--similarity-measure",
+        type=str,
+        choices=[
+            "rbo",
+            "l2",
+            "com",
+            "com_rank_weighted",
+            "com_proportional",
+            "jaccard",
+            "kendall",
+            "spearman",
+            "jaccard_weighted",
+            "kendall_weighted",
+            "spearman_weighted",
+        ],
+        default="rbo",
+    )
+    parser.add_argument(
+        "--number-of-samples",
+        type=int,
+        default=25000,
+        help="Number of datapoints sampled from the dataset",
+        required=False,
+    )
+    print(eval(parser))
