@@ -12,7 +12,7 @@ from textattack.constraints.semantics import WordEmbeddingDistance
 from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
 from textattack.transformations import WordSwapEmbedding
 
-from src.goals.goals import ADV_XAI_GF
+from src.goals.goal_function import ADV_XAI_GF
 from src.goals.initialgoal import initialIndexGF
 from src.search_methods.search import GreedyWordSwapWIR_XAI
 

@@ -49,14 +49,18 @@ def run_experiment(args: Namespace):
 
     # Load model
     # TODO: Load the correct model!!
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = AutoModelForSequenceClassification.from_pretrained(args.model)
+    model.to(device)
     tokenizer = AutoTokenizer.from_pretrained(args.model)
 
     if args.max_length:
         tokenizer.model_max_length = args.max_length
 
     model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
-
+    
+    
     # Load all necessary data
     _, dataset_test, categories = load_data(
         args.dataset, args.seed_dataset, args.number_of_samples
@@ -65,7 +69,6 @@ def run_experiment(args: Namespace):
     dataset: Dataset = typing.cast(Dataset, dataset._dataset)
     
     if args.debug:
-        print(len(dataset))
         dataset.shuffle()
         dataset = dataset.select(range(10))
 
@@ -112,7 +115,7 @@ if __name__ == "__main__":
     parser.add_argument("--label-col", type=str, default="label")
     parser.add_argument("--text-col", type=str, default="text")
     parser.add_argument("--device", type=str, default="cuda")
-    parser.add_argument("--batch-size", type=int, default=8)  # TODO: change back to 512
+    parser.add_argument("--batch-size", type=int, default=512)  # TODO: change back to 512
     parser.add_argument("--max-candidate", type=int, default=10)
     parser.add_argument("--success-threshold", type=float, default=0.5)
     parser.add_argument("--rbo-p", type=float, default=0.8)

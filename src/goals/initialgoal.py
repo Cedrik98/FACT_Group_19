@@ -86,8 +86,9 @@ class initialIndexGF(ClassificationGoalFunction):
         """
         # if type(attacked_text) == str:
         #   attacked_text = textattack.shared.attacked_text.AttackedText(attacked_text)
-
+        print("duurt")
         output = torch.stack(self._call_model_LIME_Sampler(attacked_text), 0)
+        print("lang")
         return output.numpy()
 
     def generateBaseExplanation(self, document):

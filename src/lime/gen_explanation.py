@@ -12,6 +12,7 @@ def check_bias(x, y):
 def generate_explanation_single(self, document, custom_n_samples=None, debug=False, return_explainer=False):
     if type(document) == str:
         document = textattack.shared.attacked_text.AttackedText(document)
+    # custom_n_samples = 10 
     
     explainer = TextExplainer(
                     clf=LogisticRegression(class_weight='balanced', random_state=self.random_seed, max_iter=300, n_jobs=-1),
