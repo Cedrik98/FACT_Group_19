@@ -65,6 +65,7 @@ def run_experiment(args: Namespace):
     dataset: Dataset = typing.cast(Dataset, dataset._dataset)
     
     if args.debug:
+        print(len(dataset))
         dataset.shuffle()
         dataset = dataset.select(range(10))
 
@@ -161,4 +162,5 @@ if __name__ == "__main__":
         help="Number of datapoints sampled from the dataset",
         required=False,
     )
+    
     run(parser.parse_args())

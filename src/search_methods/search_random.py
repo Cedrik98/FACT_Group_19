@@ -50,10 +50,10 @@ class GreedyWordSwapWIR_RANDOM(SearchMethod):
         self.initialIndexGF.init_attack_example(
             attacked_text, initial_result.ground_truth_output
         )
-
+        
         # Sort words by order of importance
         index_order, search_over = self._get_index_order(attacked_text)
-
+        
         i = 0
         cur_result = initial_result
         results = None
@@ -61,13 +61,13 @@ class GreedyWordSwapWIR_RANDOM(SearchMethod):
         # print('index_order', index_order)
         # print("curr attack", cur_result.attacked_text.words)
         
-        print(index_order)
+        
         while i < len(index_order) and not search_over:        
             # self.goal_function.explainer = None
             # self.goal_function.explainer_index = i
-
+            
             to_modify_word = cur_result.attacked_text.words[index_order[i]]
-
+           
             print("\n==========================================")
             print("MODIFYING", to_modify_word)
             # print("features", self.goal_function.features[0])
@@ -87,13 +87,14 @@ class GreedyWordSwapWIR_RANDOM(SearchMethod):
             #         print("preventing from modifying THE SAME WORD", to_modify_word, words)
             #         i += 1
             #         continue
-
+            
             # print("iteration at token index", i)
             transformed_text_candidates = self.get_transformations(
                 cur_result.attacked_text,
                 original_text=initial_result.attacked_text,
                 indices_to_modify=[index_order[i]],
             )
+            
             print(
                 "Found", len(transformed_text_candidates), "transformed_text_candidates"
             )

@@ -91,6 +91,7 @@ class initialIndexGF(ClassificationGoalFunction):
         return output.numpy()
 
     def generateBaseExplanation(self, document):
+        print("generateBaseExplanation_int_goal")
         explainer, explanation, prediction, probability = generate_explanation_single(
             self, document, custom_n_samples=None, debug=False, return_explainer=True
         )
@@ -101,6 +102,7 @@ class initialIndexGF(ClassificationGoalFunction):
         return explanation, prediction, probability
 
     def generateExplanation(self, document):
+        print("generateExplanation_int_goal")
         explainer, explanation, prediction, probability = generate_explanation_single(
             self, document, custom_n_samples=None, debug=False, return_explainer=True
         )

@@ -207,6 +207,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         return output.numpy()
 
     def generateBaseExplanation(self, document, custom_n_samples=None):
+        print("generateBaseExplanation_goal")
         explainer, explanation, prediction, probability = generate_explanation_single(
             self,
             document,
@@ -232,6 +233,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
     def generateExplanation(
         self, document, return_explainer=False, custom_n_samples=None
     ):
+        print("generateExplanation_goal")
         explainer, explanation, prediction, probability = generate_explanation_single(
             self,
             document,
