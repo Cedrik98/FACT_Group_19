@@ -13,6 +13,7 @@ from timeit import default_timer as timer
 from datasets import load_dataset, ClassLabel
 
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 
 import math
 import numpy as np
@@ -421,9 +422,9 @@ def generate_explanation_single(self, document, custom_n_samples=None, debug=Fal
         document = textattack.shared.attacked_text.AttackedText(document)
 
     explainer = TextExplainer(
-                    clf=LogisticRegression(class_weight='balanced', random_state=self.random_seed, max_iter=300, n_jobs=-1),
+                    # clf=LogisticRegression(class_weight='balanced', random_state=self.random_seed, max_iter=300, n_jobs=-1),
                     # clf = CULogisticRegression(class_weight='balanced', max_iter=100, verbose=True),
-                    # clf=DecisionTreeClassifier(class_weight='balanced', random_state=self.random_seed, max_depth=10),
+                    clf=DecisionTreeClassifier(class_weight='balanced', random_state=self.random_seed, max_depth=10),
                     vec=CountVectorizer(stop_words='english', lowercase=True),
                     n_samples=self.limeSamples if not custom_n_samples else custom_n_samples, 
                     random_state=self.random_seed, 

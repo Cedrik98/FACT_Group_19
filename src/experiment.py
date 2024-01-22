@@ -6,6 +6,7 @@ import torch
 import numpy
 import scipy 
 
+
 def monkeypath_itemfreq(sampler_indices):
 	return zip(*numpy.unique(sampler_indices, return_counts=True))
 scipy.stats.itemfreq=monkeypath_itemfreq
@@ -33,10 +34,6 @@ from src.attack_recipes.gen_attacker import *
 from src.attack_recipes.attack import *
 
 if __name__ == "__main__":
-    print("Running experiment")
-    import tensorflow as tf
-    print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-
     args = load_args()
     filename = generate_filename(args)
 
@@ -62,7 +59,7 @@ if __name__ == "__main__":
     dataset = dataset._dataset    
     if args.debug:          
         dataset = dataset.shuffle()
-        dataset = dataset.select(range(100))
+        dataset = dataset.select(range(10))
         print(dataset)
     
     data, categories = process_dataset(dataset, args, stopwords)
@@ -79,3 +76,4 @@ if __name__ == "__main__":
     print(attacker)
     
     results, rbos, sims = perform_attack(data, args, attacker, stopwords, filename)
+    print(results)
