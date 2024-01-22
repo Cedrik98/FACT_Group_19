@@ -2,6 +2,15 @@
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
+from src.dataset import DATASETS
+
+MODELS = [
+    "distilbert-base-uncased",
+    "bert-base-uncased",
+    "roberta-base",
+    "gpt2",
+]
+
 
 def compute_metrics():
     """Returns evaluation function."""
@@ -37,9 +46,12 @@ def save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained
     model.push_to_hub(f"JakobKaiser/{model_trained_dir}")
 
 
-def run(args: Namespace):
-    """Entry point for evaluation."""
+def train(args: Namespace):
+    """Trains a model/dataset combination."""
+    # TODO: look at this
+    # from transformers import EarlyStoppingCallback
     import gc
+    import os
     from pathlib import Path
 
     import numpy as np
@@ -54,23 +66,24 @@ def run(args: Namespace):
 
     from src.dataset import load_data
 
-    # TODO: look at this
-    # import os
-    # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
-    # from transformers import EarlyStoppingCallback
-    #
+    print(f"\nTRAINING: {args.model} {args.dataset}")
+    print(f"ARGS: {args}\n")
+
     # Collect garbage using garbage collection.
     gc.collect()
     torch.cuda.empty_cache()
+
+    # Prevent memory fragmentation
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
 
     model_checkpoints_dir = Path(f"{args.model}-{args.dataset}-checkpoints")
     model_trained_dir = Path(f"{args.model}-{args.dataset}-trained")
     logs_dir = Path(f"{args.model}-{args.dataset}-trained")
 
     # Set paths for storing information
-    model_checkpoints_path = Path("./results") / model_checkpoints_dir
-    model_trained_path = Path("./results") / model_trained_dir
-    logs_path = Path("./results") / logs_dir
+    model_checkpoints_path = Path("./results/train/") / model_checkpoints_dir
+    model_trained_path = Path("./results/train/") / model_trained_dir
+    logs_path = Path("./results/train/") / logs_dir
 
     # Change verbosity level to prevent warnings
     if args.debug:
@@ -79,7 +92,7 @@ def run(args: Namespace):
         transformers.logging.set_verbosity_error()
 
     # Load dataset
-    train_valid_dataset, test_dataset = load_data(
+    train_valid_dataset, test_dataset, categories = load_data(
         args.dataset, seed=args.seed, number_of_samples=args.number_of_samples
     )
     train_dataset = train_valid_dataset["train"]
@@ -95,13 +108,16 @@ def run(args: Namespace):
     # Initalize tokenizer
     tokenizer = AutoTokenizer.from_pretrained(args.model, use_fast=True)
 
+    if args.model == "gpt2":
+        tokenizer.pad_token = tokenizer.eos_token
+
     # Initialize model
-    train_categories = train_dataset.unique("label")
-    valid_categories = valid_dataset.unique("label")
-    categories = train_categories + valid_categories
     model = AutoModelForSequenceClassification.from_pretrained(
         args.model, num_labels=len(categories)
     )
+
+    if args.model == "gpt2":
+        model.config.pad_token_id = model.config.eos_token_id
 
     # Tokenize the data
     def tokenize_function(examples):
@@ -169,19 +185,30 @@ def run(args: Namespace):
     save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained_dir)
 
 
-if __name__ == "__main__":
-    from src.dataset import DATASETS
+def run(args: Namespace):
+    """Entry point for evaluation."""
+    import itertools
 
+    if args.all:
+        for model, dataset in list(itertools.product(MODELS, DATASETS)):
+            args.model = model
+            args.dataset = dataset
+
+            if model == "bert-base-uncased":
+                args.batch_size = 128
+
+            train(args)
+    else:
+        train(args)
+
+
+if __name__ == "__main__":
     parser = ArgumentParser(description="XAIFOOLER Training")
     parser.add_argument(
         "--model",
         "-m",
         type=str,
-        choices=[
-            "distilbert-base-uncased",
-            "bert-base-uncased",
-            "roberta-base",
-        ],
+        choices=MODELS,
         default="distilbert-base-uncased",
         help="Model to train",
         required=False,
@@ -246,8 +273,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--number-of-samples",
         type=int,
-        default=30000,
+        default=25000,
         help="Number of datapoints sampled from the dataset",
+        required=False,
+    )
+    parser.add_argument(
+        "--all",
+        type=bool,
+        default=False,
+        help="Trains all combinations of models/datasets",
         required=False,
     )
     run(parser.parse_args())

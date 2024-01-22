@@ -1,43 +1,20 @@
 import math
 from timeit import default_timer as timer
-
-import eli5
 import numpy as np
-import scipy
 import textattack
 import torch
-from eli5.lime import TextExplainer
-from eli5.lime.samplers import MaskingTextSampler, MaskingTextSamplers
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from textattack import Attack
-from textattack.attack_recipes import AttackRecipe
-from textattack.constraints.grammaticality import PartOfSpeech
-from textattack.constraints.pre_transformation import (
-    InputColumnModification,
-    RepeatModification,
-    StopwordModification,
-)
-from textattack.constraints.semantics import WordEmbeddingDistance
-from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
+
 from textattack.goal_function_results import GoalFunctionResultStatus
 from textattack.goal_function_results.goal_function_result import (
     GoalFunctionResultStatus,
 )
-from textattack.goal_functions import GoalFunction, UntargetedClassification
 from textattack.goal_functions.classification.classification_goal_function import (
     ClassificationGoalFunction,
 )
-from textattack.search_methods import GreedyWordSwapWIR, SearchMethod
-from textattack.shared.validators import (
-    transformation_consists_of_word_swaps_and_deletions,
-)
-from textattack.transformations import WordSwapEmbedding
-from torch.nn.functional import softmax
 
-from src.attack_recipes.common import *
 
+from src.utils.file_create import *
+from src.evaluation.eval_func import generate_explanation_single
 
 class ADV_XAI_GF(ClassificationGoalFunction):
     """
