@@ -66,7 +66,7 @@ def run_experiment(args: Namespace):
     
     if args.debug:
         dataset.shuffle()
-        dataset = dataset.select(range(4))
+        dataset = dataset.select(range(10))
 
      # type: ignore
     stopwords = set(nltk.corpus.stopwords.words("english"))
@@ -85,6 +85,7 @@ def run_experiment(args: Namespace):
     results, rbos, sims = perform_attack(
         data, args, attacker, stopwords, str(output_path)
     )
+    print(results)
 
 
 def run(args: Namespace):
@@ -121,7 +122,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=12)
     parser.add_argument("--seed-dataset", type=int, default=12)
     parser.add_argument(
-        "--method", type=str, choices=["ga", "random", "truerandom"], default="random"
+        "--method", type=str, choices=["ga", "random", "truerandom", "xaifooler", "inherent"], default="random"
     )
     parser.add_argument("--search-method", type=str, default="default")
     parser.add_argument(

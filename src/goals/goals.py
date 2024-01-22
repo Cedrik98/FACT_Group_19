@@ -14,7 +14,7 @@ from textattack.goal_functions.classification.classification_goal_function impor
 
 
 from src.utils.file_create import *
-from src.evaluation.eval_func import generate_explanation_single
+from src.lime.gen_explanation import generate_explanation_single
 
 class ADV_XAI_GF(ClassificationGoalFunction):
     """

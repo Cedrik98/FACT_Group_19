@@ -73,13 +73,13 @@ def perform_attack(data, args, attacker, stopwords, filename):
         #     text = " ".join(text.split()[:args.max_length])
 
         if args.method in set(["xaifooler", "random", "truerandom", "ga"]):
+            print("-------------")
             output = attacker.attack.goal_function.get_output(example)
             result = None
 
-            # certain malformed instances can return empty dataframes
-
+            # certain malformed instances can return empty dataframes            
             # result = attacker.attack.attack(example, output)
-
+            
             try:
                 result = attacker.attack.attack(example, output)
 
