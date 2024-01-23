@@ -2,14 +2,9 @@
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
+from src.constants import HF_ACCOUNT, TRAIN_LOGGING_PATH
 from src.dataset import DATASETS
-
-MODELS = [
-    "distilbert-base-uncased",
-    "bert-base-uncased",
-    "roberta-base",
-    "gpt2",
-]
+from src.model import MODELS, save_model_and_tokenizer
 
 
 def compute_metrics():
@@ -33,17 +28,6 @@ def compute_metrics():
         }
 
     return evaluation_func
-
-
-def save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained_dir):
-    """Saves model and tokenizer locally and uploads them to huggingface."""
-    # Store trained models
-    tokenizer.save_pretrained(model_trained_path)
-    model.save_pretrained(model_trained_path)
-
-    # Push everything to huggingface
-    tokenizer.push_to_hub(f"JakobKaiser/{model_trained_dir}")
-    model.push_to_hub(f"JakobKaiser/{model_trained_dir}")
 
 
 def train(args: Namespace):
@@ -81,9 +65,10 @@ def train(args: Namespace):
     logs_dir = Path(f"{args.model}-{args.dataset}-trained")
 
     # Set paths for storing information
-    model_checkpoints_path = Path("./results/train/") / model_checkpoints_dir
-    model_trained_path = Path("./results/train/") / model_trained_dir
-    logs_path = Path("./results/train/") / logs_dir
+    train_logging_path = Path(TRAIN_LOGGING_PATH)
+    model_checkpoints_path = train_logging_path / model_checkpoints_dir
+    model_trained_path = train_logging_path / model_trained_dir
+    logs_path = train_logging_path / logs_dir
 
     # Change verbosity level to prevent warnings
     if args.debug:
@@ -182,7 +167,9 @@ def train(args: Namespace):
     result = trainer.evaluate(tokenized_test_dataset)
     print(result)
 
-    save_model_and_tokenizer(model, tokenizer, model_trained_path, model_trained_dir)
+    save_model_and_tokenizer(
+        model, tokenizer, model_trained_path, model_trained_dir, hf_account=HF_ACCOUNT
+    )
 
 
 def run(args: Namespace):
