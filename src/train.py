@@ -7,6 +7,7 @@ from src.dataset import DATASETS
 MODELS = [
     "distilbert-base-uncased",
     "bert-base-uncased",
+    "bert-base-cased",
     "roberta-base",
     "gpt2",
 ]
