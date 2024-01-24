@@ -1,43 +1,20 @@
-import math
 
-import eli5
 import numpy as np
-import scipy
 import textattack
 import torch
-from eli5.lime import TextExplainer
-from eli5.lime.samplers import MaskingTextSampler, MaskingTextSamplers
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from textattack import Attack
-from textattack.attack_recipes import AttackRecipe
-from textattack.constraints.grammaticality import PartOfSpeech
-from textattack.constraints.pre_transformation import (
-    InputColumnModification,
-    RepeatModification,
-    StopwordModification,
-)
-from textattack.constraints.semantics import WordEmbeddingDistance
-from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
+
 from textattack.goal_function_results import GoalFunctionResultStatus
 from textattack.goal_function_results.goal_function_result import (
     GoalFunctionResultStatus,
 )
-from textattack.goal_functions import GoalFunction, UntargetedClassification
+
 from textattack.goal_functions.classification.classification_goal_function import (
     ClassificationGoalFunction,
 )
-from textattack.search_methods import GreedyWordSwapWIR, SearchMethod
-from textattack.shared.validators import (
-    transformation_consists_of_word_swaps_and_deletions,
-)
-from textattack.transformations import WordSwapEmbedding
-from torch.nn.functional import softmax
 
 from src.utils.file_create import *
 from src.evaluation.eval_func import *
-
+from src.lime.gen_explanation import generate_explanation_single
 
 class initialIndexGF(ClassificationGoalFunction):
     """
@@ -107,11 +84,13 @@ class initialIndexGF(ClassificationGoalFunction):
         """
         # if type(attacked_text) == str:
         #   attacked_text = textattack.shared.attacked_text.AttackedText(attacked_text)
-
+        
         output = torch.stack(self._call_model_LIME_Sampler(attacked_text), 0)
+        
         return output.numpy()
 
     def generateBaseExplanation(self, document):
+        print("generateBaseExplanation_int_goal")
         explainer, explanation, prediction, probability = generate_explanation_single(
             self, document, custom_n_samples=None, debug=False, return_explainer=True
         )
@@ -122,6 +101,7 @@ class initialIndexGF(ClassificationGoalFunction):
         return explanation, prediction, probability
 
     def generateExplanation(self, document):
+        print("generateExplanation_int_goal")
         explainer, explanation, prediction, probability = generate_explanation_single(
             self, document, custom_n_samples=None, debug=False, return_explainer=True
         )

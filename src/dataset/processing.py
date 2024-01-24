@@ -12,7 +12,7 @@ def process_experiment_data(dataset: Dataset, args: Namespace, stopwords):
     for i in range(len(dataset)):
         text = dataset[i].get(args.text_col)
         if args.debug:
-            example = textattack.shared.attacked_text.AttackedText(text[:30])
+            example = textattack.shared.attacked_text.AttackedText(text)
 
         else:
             example = textattack.shared.attacked_text.AttackedText(text)
