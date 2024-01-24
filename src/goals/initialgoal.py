@@ -3,8 +3,6 @@ import numpy as np
 import textattack
 import torch
 
-from textattack.constraints.semantics import WordEmbeddingDistance
-from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
 from textattack.goal_function_results import GoalFunctionResultStatus
 from textattack.goal_function_results.goal_function_result import (
     GoalFunctionResultStatus,
@@ -86,9 +84,9 @@ class initialIndexGF(ClassificationGoalFunction):
         """
         # if type(attacked_text) == str:
         #   attacked_text = textattack.shared.attacked_text.AttackedText(attacked_text)
-        print("duurt")
+        
         output = torch.stack(self._call_model_LIME_Sampler(attacked_text), 0)
-        print("lang")
+        
         return output.numpy()
 
     def generateBaseExplanation(self, document):

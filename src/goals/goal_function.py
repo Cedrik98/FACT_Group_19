@@ -202,9 +202,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         # print('pred_proba_LIME_Sampler', attacked_texts)
         # if type(attacked_text) == str:
         #   attacked_text = textattack.shared.attacked_text.AttackedText(attacked_text)
-        print("duurt")
+        
         output = torch.stack(self._call_model_LIME_Sampler(attacked_texts), 0)
-        print("lang")
+        
         return output.numpy()
 
     def generateBaseExplanation(self, document, custom_n_samples=None):
@@ -1336,7 +1336,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         the cache, queries model and stores prediction in cache.
         """
         # print(attacked_text_list,type(attacked_text_list))
-        print("1")
+        
         if type(attacked_text_list) is tuple:
             attacked_text_list = [
                 textattack.shared.attacked_text.AttackedText(string)
@@ -1347,7 +1347,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 textattack.shared.attacked_text.AttackedText(string)
                 for string in attacked_text_list[0]
             ]
-        print("2")
+        
         local_cache = set()
 
         if not self.use_cache:
@@ -1368,13 +1368,13 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                     if text.text not in local_cache:
                         uncached_list.append(text)
                         local_cache.add(text.text)
-            print("4")
+            
             outputs = self._call_model_uncached(uncached_list)
-            print("5")
+            
             for text, output in zip(uncached_list, outputs):
                 self._call_model_cache[text] = output
             all_outputs = [self._call_model_cache[text] for text in attacked_text_list]
-            print("3")
+            
             return all_outputs
 
     def extra_repr_keys(self):
