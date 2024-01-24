@@ -11,30 +11,19 @@ import textattack
 import torch
 from datasets.arrow_dataset import Dataset
 from textattack.models.wrappers.huggingface_model_wrapper import HuggingFaceModelWrapper
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 from src.attack_recipes.attack import perform_attack
 from src.attack_recipes.gen_attacker import generate_attacker
+from src.constants import EXPERIMENT_LOGGING_PATH, HF_ACCOUNT
 from src.dataset import DATASETS, load_data, process_experiment_data
-
-MODELS = [
-    "distilbert-base-uncased-imdb-saved",
-    "bert-base-uncased-imdb-saved",
-    "roberta-base-imdb-saved",
-    "distilbert-base-uncased-md_gender_bias-saved",
-    "bert-base-uncased-md_gender_bias-saved",
-    "roberta-base-md_gender_bias-saved",
-    "bert-base-uncased-s2d-saved",
-    "distilbert-base-uncased-s2d-saved",
-    "roberta-base-s2d-saved",
-]
+from src.model import MODELS, load_trained_model_and_tokenizer
 
 
 def run_experiment(args: Namespace):
     """Runs one experiment with given configuration."""
     # Set paths for storing information.
     output_path = Path(
-        f"./results/experiments/{args.model}-{args.dataset}-{args.method}-{args.similarity_measure}/"
+        f"{EXPERIMENT_LOGGING_PATH}/{args.model}-{args.dataset}-{args.method}-{args.similarity_measure}/"
     )
     text_attack_logging_file = Path("attack_log.csv")
     text_attack_logging_path = output_path / text_attack_logging_file
@@ -48,33 +37,27 @@ def run_experiment(args: Namespace):
         json.dump(args.__dict__, file, indent=4)
 
     # Load model
-    # TODO: Load the correct model!!
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(device)
-    model = AutoModelForSequenceClassification.from_pretrained(args.model)
-    model.to(device)
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
+    model, tokenizer = load_trained_model_and_tokenizer(
+        args.model, args.dataset, HF_ACCOUNT
+    )
 
     if args.max_length:
-        tokenizer.model_max_length = args.max_length
+        tokenizer.model_max_length = args.max_length  # type: ignore
 
     model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
-    
-    
+
     # Load all necessary data
     _, dataset_test, categories = load_data(
         args.dataset, args.seed_dataset, args.number_of_samples
     )
     dataset = textattack.datasets.HuggingFaceDataset(dataset_test)
     dataset: Dataset = typing.cast(Dataset, dataset._dataset)
-    
+
     if args.debug:
         dataset.shuffle()
         dataset = dataset.select(range(10))
 
-     # type: ignore
-    stopwords = set(nltk.corpus.stopwords.words("english"))
+    stopwords = set(nltk.corpus.stopwords.words("english"))  # type: ignore
 
     # Preprocess data
     data, categories = process_experiment_data(dataset, args, stopwords)
@@ -110,13 +93,18 @@ if __name__ == "__main__":
     parser.add_argument("--lime-sr", type=int, default=None)
     parser.add_argument("--top-n", type=int, default=3)
     parser.add_argument(
-        "--model", type=str, default="thaile/bert-base-uncased-imdb-saved"
+        "--model",
+        type=str,
+        choices=MODELS,
+        default="bert-base-uncased",
     )
     parser.add_argument("--dataset", type=str, choices=DATASETS, default="imdb")
     parser.add_argument("--label-col", type=str, default="label")
     parser.add_argument("--text-col", type=str, default="text")
     parser.add_argument("--device", type=str, default="cuda")
-    parser.add_argument("--batch-size", type=int, default=512)  # TODO: change back to 512
+    parser.add_argument(
+        "--batch-size", type=int, default=512
+    )  # TODO: change back to 512
     parser.add_argument("--max-candidate", type=int, default=10)
     parser.add_argument("--success-threshold", type=float, default=0.5)
     parser.add_argument("--rbo-p", type=float, default=0.8)
@@ -127,7 +115,10 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=12)
     parser.add_argument("--seed-dataset", type=int, default=12)
     parser.add_argument(
-        "--method", type=str, choices=["ga", "random", "truerandom", "xaifooler", "inherent"], default="random"
+        "--method",
+        type=str,
+        choices=["ga", "random", "truerandom", "xaifooler", "inherent"],
+        default="random",
     )
     parser.add_argument("--search-method", type=str, default="default")
     parser.add_argument(
@@ -166,5 +157,5 @@ if __name__ == "__main__":
         help="Number of datapoints sampled from the dataset",
         required=False,
     )
-    
+
     run(parser.parse_args())
