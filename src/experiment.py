@@ -51,6 +51,7 @@ def run_experiment(args: Namespace):
     # TODO: Load the correct model!!
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(device)
     model = AutoModelForSequenceClassification.from_pretrained(args.model)
     model.to(device)
     tokenizer = AutoTokenizer.from_pretrained(args.model)
