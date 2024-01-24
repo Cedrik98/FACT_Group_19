@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 MODELS = [
@@ -13,11 +14,14 @@ MODELS = [
 def load_trained_model_and_tokenizer(
     model_name, dataset_name, hf_account
 ) -> Tuple[AutoModelForSequenceClassification, AutoTokenizer]:
-    print(hf_account, model_name, dataset_name)
     repo_name = f"{hf_account}/{model_name}-{dataset_name}-trained"
-    print(repo_name)
     model = AutoModelForSequenceClassification.from_pretrained(repo_name)
     tokenizer = AutoTokenizer.from_pretrained(repo_name)
+
+    # Put model on device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+
     return model, tokenizer
 
 
