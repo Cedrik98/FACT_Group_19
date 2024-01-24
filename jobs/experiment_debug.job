@@ -11,9 +11,7 @@
 module purge
 module load 2023
 module load Python/3.11.3-GCCcore-12.3.0
-module load cuda/10.1  # Replace with the appropriate version
-module load cudnn/7.6  # Replace with the appropriate version for CUDA 10.1
-module load tensorflow/2.13.1
+
 # Store cache in scratch for read write speed.
 export HF_DATASETS_CACHE="/scratch-local/scur1035"
 cd $HOME/FACT_Group_19/

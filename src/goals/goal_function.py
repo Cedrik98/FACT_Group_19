@@ -1348,8 +1348,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 for string in attacked_text_list[0]
             ]
         
-        local_cache = set()
-
+        local_cache = set()        
         if not self.use_cache:
             
             return self._call_model_uncached(attacked_text_list)
