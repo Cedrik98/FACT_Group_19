@@ -69,6 +69,8 @@ class GreedyWordSwapWIR_RANDOM(SearchMethod):
             to_modify_word = cur_result.attacked_text.words[index_order[i]]
            
             print("\n==========================================")
+            print(i)
+            print(len(index_order))
             print("MODIFYING", to_modify_word)
             # print("features", self.goal_function.features[0])
             if to_modify_word.lower() in self.goal_function.features[0]:
@@ -104,24 +106,25 @@ class GreedyWordSwapWIR_RANDOM(SearchMethod):
 
             # print('self.get_goal_results', self.get_goal_results)
             # print("checking get_goal_results...")
-
+            
             # RANDOMLY SELECT ONE OF THE TRANSFORMATION
             transformed_text_candidates = [
                 transformed_text_candidates[
                     np.random.choice(range(len(transformed_text_candidates)))
                 ]
             ]
-
+            print("Lime")
             results, search_over = self.get_goal_results(transformed_text_candidates)
+            print("end")
             # target_original=cur_result.attacked_text.words[index_order[i]])
             print("search_over", search_over)
             # print(results)
-
+            
             results = sorted(results, key=lambda x: -x.score)
-
+            
             if not self.greedy_search:
                 cur_result = results[0]
-
+            
             else:
                 # Skip swaps which don't improve the score (v.s. the best score found right now)
                 if results[0].score > cur_result.score:

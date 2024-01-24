@@ -188,6 +188,8 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
             to_modify_word = cur_result.attacked_text.words[index_order[i]]
 
             print("\n==========================================")
+            print(i)
+            print(index_order)
             print("MODIFYING", to_modify_word)
             # print("features", self.goal_function.features[0])
             if to_modify_word.lower() in self.goal_function.features[0]:

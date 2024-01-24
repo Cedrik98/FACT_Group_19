@@ -12,14 +12,15 @@ def check_bias(x, y):
 def generate_explanation_single(self, document, custom_n_samples=None, debug=False, return_explainer=False):
     if type(document) == str:
         document = textattack.shared.attacked_text.AttackedText(document)
-    # custom_n_samples = 10 
-    
+
+    # n_samples = self.limeSamples if not custom_n_samples else custom_n_samples
+    n_samples = 100
     explainer = TextExplainer(
                     clf=LogisticRegression(class_weight='balanced', random_state=self.random_seed, max_iter=300, n_jobs=-1),
                     # clf = CULogisticRegression(class_weight='balanced', max_iter=100, verbose=True),
                     # clf=DecisionTreeClassifier(class_weight='balanced', random_state=self.random_seed, max_depth=10),
                     vec=CountVectorizer(stop_words='english', lowercase=True),
-                    n_samples=self.limeSamples if not custom_n_samples else custom_n_samples, 
+                    n_samples=n_samples, 
                     random_state=self.random_seed, 
                     sampler=MaskingTextSampler(random_state=self.random_seed))
     

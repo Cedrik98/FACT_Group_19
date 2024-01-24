@@ -36,16 +36,6 @@ def run_experiment(args: Namespace):
     with open(output_path / "config.json", "w") as file:
         json.dump(args.__dict__, file, indent=4)
 
-    # Load model
-    model, tokenizer = load_trained_model_and_tokenizer(
-        args.model, args.dataset, HF_ACCOUNT
-    )
-
-    if args.max_length:
-        tokenizer.model_max_length = args.max_length  # type: ignore
-
-    model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
-
     # Load all necessary data
     _, dataset_test, categories = load_data(
         args.dataset, args.seed_dataset, args.number_of_samples
@@ -53,11 +43,21 @@ def run_experiment(args: Namespace):
     dataset = textattack.datasets.HuggingFaceDataset(dataset_test)
     dataset: Dataset = typing.cast(Dataset, dataset._dataset)
 
-    if args.debug:
-        dataset.shuffle()
-        dataset = dataset.select(range(10))
+    # if args.debug:
+    #     dataset.shuffle()
+    #     dataset = dataset.select(range(10))
 
     stopwords = set(nltk.corpus.stopwords.words("english"))  # type: ignore
+
+    # Load model
+    model, tokenizer = load_trained_model_and_tokenizer(
+        args.model, args.dataset, HF_ACCOUNT, categories=categories
+    )
+    model.to('cuda')
+    if args.max_length:
+        tokenizer.model_max_length = args.max_length  # type: ignore
+
+    model_wrapper = HuggingFaceModelWrapper(model, tokenizer)
 
     # Preprocess data
     data, categories = process_experiment_data(dataset, args, stopwords)

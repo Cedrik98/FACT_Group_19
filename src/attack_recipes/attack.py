@@ -77,13 +77,14 @@ def perform_attack(data, args, attacker, stopwords, filename):
             output = attacker.attack.goal_function.get_output(example)
             result = None
             
-            # certain malformed instances can return empty dataframes
-                       
-            
+            # certain malformed instances can return empty dataframes                    
             
             try:
+                start = timer()
                 result = attacker.attack.attack(example, output)
-
+                end = timer()
+                print("Attack took...", end - start)    
+    
             except Exception as e:
                 print(f"Error encountered: {e}")
                 print("Error generating result")
