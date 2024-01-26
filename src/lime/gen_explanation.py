@@ -14,7 +14,7 @@ def generate_explanation_single(self, document, custom_n_samples=None, debug=Fal
         document = textattack.shared.attacked_text.AttackedText(document)
 
     # n_samples = self.limeSamples if not custom_n_samples else custom_n_samples
-    n_samples = 100
+    n_samples = 1500
     explainer = TextExplainer(
                     clf=LogisticRegression(class_weight='balanced', random_state=self.random_seed, max_iter=300, n_jobs=-1),
                     # clf = CULogisticRegression(class_weight='balanced', max_iter=100, verbose=True),

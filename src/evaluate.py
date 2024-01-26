@@ -21,8 +21,14 @@ torch.cuda.empty_cache()
 import os
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = 'max_split_size_mb:128'
-
-import pickle
+IMDB_DATASET_NAME = "imdb"
+MD_GENDER_BIAS_DATASET_NAME = "md_gender_bias"
+SYMPTOM_TO_DIAGNOSIS_DATASET_NAME = "symptom_to_diagnosis"
+DATASETS = [
+    IMDB_DATASET_NAME,
+    MD_GENDER_BIAS_DATASET_NAME,
+    SYMPTOM_TO_DIAGNOSIS_DATASET_NAME,
+]
 
 import numpy as np
 import pandas as pd
@@ -103,8 +109,8 @@ def eval(args, filename=None, use=None):
 	with open(f'{filename}/config.json', 'r') as f:
 		configs = json.loads(f.read())
 	# TODO: How to save results
-	# results2 = pickle.load(open(f"{filename}/results.pickle", 'rb'))
-	results2 = []
+	results2 = pickle.load(open(f"{filename}/results.pickle", 'rb'))
+	
 	results = []
 	texts = set()
 	for a in results2[::-1]:
@@ -260,9 +266,7 @@ if __name__ == "__main__":
     # All of these should have a help comment!!!
     parser.add_argument("--lime-sr", type=int, default=None)
     parser.add_argument("--top-n", type=int, default=3)
-    parser.add_argument(
-        "--model", type=str, default="thaile/bert-base-uncased-imdb-saved"
-    )
+    parser.add_argument("--model", type=str, default="thaile/distilbert-base-uncased-imdb-saved")
     parser.add_argument("--dataset", type=str, choices=DATASETS, default="imdb")
     parser.add_argument("--label-col", type=str, default="label")
     parser.add_argument("--text-col", type=str, default="text")
@@ -317,4 +321,5 @@ if __name__ == "__main__":
         help="Number of datapoints sampled from the dataset",
         required=False,
     )
+    print("works")
     print(eval(parser))

@@ -9,6 +9,7 @@ from pathlib import Path
 import nltk
 import textattack
 import torch
+from timeit import default_timer as timer
 from datasets.arrow_dataset import Dataset
 from textattack.models.wrappers.huggingface_model_wrapper import HuggingFaceModelWrapper
 
@@ -68,14 +69,17 @@ def run_experiment(args: Namespace):
     )
 
     print(attacker)
-
+    start = timer()
     # Perform attack
     results, rbos, sims = perform_attack(
         data, args, attacker, stopwords, str(output_path)
     )
     print(results)
-
-
+    print(rbos)
+    print(sims)
+    end = timer()
+    print("Full attack took...", end - start)
+    
 def run(args: Namespace):
     """Entry point for running all experiments."""
     os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:24"
@@ -87,7 +91,7 @@ def run(args: Namespace):
     run_experiment(args)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     parser = ArgumentParser(description="XAIFOOLER Experiment")
     # All of these should have a help comment!!!
     parser.add_argument("--lime-sr", type=int, default=None)
