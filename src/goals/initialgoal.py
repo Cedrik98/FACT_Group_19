@@ -163,13 +163,9 @@ class initialIndexGF(ClassificationGoalFunction):
     def init_attack_example(self, attacked_text, ground_truth_output):
         """Called before attacking ``attacked_text`` to 'reset' the goal
         function and set properties for this example."""
-
         self.initial_attacked_text = attacked_text
-
         self.ground_truth_output = ground_truth_output
-
         self.num_queries = 0
-
         self.complete = False
 
         self.baseExplanation = self.generateBaseExplanation(attacked_text)
@@ -184,6 +180,9 @@ class initialIndexGF(ClassificationGoalFunction):
         self.featureCount = self._countFeatures(attacked_text)
 
         result, _ = self.get_result(attacked_text, check_skip=True)
+
+        print(f"Init result {result}")
+
         return result, _
 
     def _is_goal_complete(self, model_output, _):

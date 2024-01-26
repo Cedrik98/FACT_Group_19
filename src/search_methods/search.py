@@ -18,7 +18,9 @@ from textattack.constraints.pre_transformation import (
     StopwordModification,
 )
 from textattack.constraints.semantics import WordEmbeddingDistance
-from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
+from textattack.constraints.semantics.sentence_encoders import (
+    UniversalSentenceEncoder,
+)
 from textattack.goal_function_results import GoalFunctionResultStatus
 from textattack.goal_function_results.goal_function_result import (
     GoalFunctionResultStatus,
@@ -71,7 +73,9 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
             leave_one_results, search_over = self.initialIndexGF.get_results(
                 leave_one_texts
             )
-            index_scores = np.array([result.score for result in leave_one_results])
+            index_scores = np.array(
+                [result.score for result in leave_one_results]
+            )
 
         elif self.wir_method == "weighted-saliency":
             # first, compute word saliency
@@ -82,7 +86,9 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
             leave_one_results, search_over = self.initialIndexGF.get_results(
                 leave_one_texts
             )
-            saliency_scores = np.array([result.score for result in leave_one_results])
+            saliency_scores = np.array(
+                [result.score for result in leave_one_results]
+            )
 
             softmax_saliency_scores = softmax(
                 torch.Tensor(saliency_scores), dim=0
@@ -127,7 +133,9 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
             leave_one_results, search_over = self.initialIndexGF.get_results(
                 leave_one_texts
             )
-            index_scores = np.array([result.score for result in leave_one_results])
+            index_scores = np.array(
+                [result.score for result in leave_one_results]
+            )
             # print("index_scores", index_scores)
             # print(leave_one_texts, index_scores)
 
@@ -136,7 +144,9 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
             index_scores = np.zeros(len_text)
             grad_output = victim_model.get_grad(initial_text.tokenizer_input)
             gradient = grad_output["gradient"]
-            word2token_mapping = initial_text.align_with_model_tokens(victim_model)
+            word2token_mapping = initial_text.align_with_model_tokens(
+                victim_model
+            )
             for i, index in enumerate(indices_to_order):
                 matched_tokens = word2token_mapping[index]
                 if not matched_tokens:
@@ -156,17 +166,23 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
 
         if self.wir_method != "random":
             if self.reverseIndices:
-                index_order = np.array(indices_to_order)[(index_scores).argsort()]
+                index_order = np.array(indices_to_order)[
+                    (index_scores).argsort()
+                ]
             else:
-                index_order = np.array(indices_to_order)[(-index_scores).argsort()]
+                index_order = np.array(indices_to_order)[
+                    (-index_scores).argsort()
+                ]
 
         return index_order, search_over
 
     def perform_search(self, initial_result):
         attacked_text = initial_result.attacked_text
 
-        ## Need to generate a base explanation here, search function does not have access to the goal function's methods by default
-        ## Using a custom goal function to order the indices by probability difference as in the textfooler paper
+        # Need to generate a base explanation here, search function does not
+        # have access to the goal function's methods by default
+        # Using a custom goal function to order the indices by
+        # probability difference as in the textfooler paper
 
         self.initialIndexGF.init_attack_example(
             attacked_text, initial_result.ground_truth_output
@@ -213,43 +229,63 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
                 original_text=initial_result.attacked_text,
                 indices_to_modify=[index_order[i]],
             )
+
             print(
-                "Found", len(transformed_text_candidates), "transformed_text_candidates"
+                "Found",
+                len(transformed_text_candidates),
+                "transformed_text_candidates",
             )
+
+            for cand in transformed_text_candidates:
+                print(f"\t{cand}")
+
             i += 1
             if len(transformed_text_candidates) == 0:
                 continue
 
-            # print('self.get_goal_results', self.get_goal_results)
-            # print("checking get_goal_results...")
-            results, search_over = self.get_goal_results(transformed_text_candidates)
-            # target_original=cur_result.attacked_text.words[index_order[i]])
+            results, search_over = self.get_goal_results(
+                transformed_text_candidates
+            )
+
             print("search_over", search_over)
-            # print(results)
 
             results = sorted(results, key=lambda x: -x.score)
 
-            # Skip swaps which don't improve the score (v.s. the best score found right now)
+            print("RESULTS\n")
+            print(results)
+
+            # Skip swaps which don't improve the score
+            # (v.s. the best score found right now)
             if results[0].score > cur_result.score:
                 print("SCORE IMPROVED", results[0].score, cur_result.score)
-                # print("-->", results[0])
                 cur_result = results[0]
             else:
+                print(
+                    "Failed improving score",
+                    results[0].score,
+                    cur_result.score,
+                )
                 continue
 
             # If we succeeded, return the index with best similarity.
             if cur_result.goal_status == GoalFunctionResultStatus.SUCCEEDED:
+                print("Succeeded goal function")
+
                 best_result = cur_result
-                # @TODO: Use vectorwise operations
                 max_similarity = -float("inf")
                 for result in results:
-                    if result.goal_status != GoalFunctionResultStatus.SUCCEEDED:
+                    if (
+                        result.goal_status
+                        != GoalFunctionResultStatus.SUCCEEDED
+                    ):
                         continue
                     candidate = result.attacked_text
 
                     # important, not the best RBO is selected, also need to check similarity score
                     try:
-                        similarity_score = candidate.attack_attrs["similarity_score"]
+                        similarity_score = candidate.attack_attrs[
+                            "similarity_score"
+                        ]
                     except KeyError:
                         # If the attack was run without any similarity metrics,
                         # candidates won't have a similarity score. In this
@@ -261,15 +297,14 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
                         best_result = result
                 return best_result
 
-            # if i > len(index_order):
-            #     break
-
         return cur_result
 
     def check_transformation_compatibility(self, transformation):
         """Since it ranks words by their importance, GreedyWordSwapWIR is
         limited to word swap and deletion transformations."""
-        return transformation_consists_of_word_swaps_and_deletions(transformation)
+        return transformation_consists_of_word_swaps_and_deletions(
+            transformation
+        )
 
     @property
     def is_black_box(self):

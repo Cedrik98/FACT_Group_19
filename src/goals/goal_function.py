@@ -16,6 +16,7 @@ from textattack.goal_functions.classification.classification_goal_function impor
 from src.utils.file_create import *
 from src.lime.gen_explanation import generate_explanation_single
 
+
 class ADV_XAI_GF(ClassificationGoalFunction):
     """
     Goal Function for XAI attack.
@@ -190,9 +191,13 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         """Returns output for display based on the result of calling the
         model."""
         if type(attacked_text) == str:
-            attacked_text = textattack.shared.attacked_text.AttackedText(attacked_text)
+            attacked_text = textattack.shared.attacked_text.AttackedText(
+                attacked_text
+            )
 
-        return np.expand_dims(self._call_model([attacked_text])[0].numpy(), axis=1)
+        return np.expand_dims(
+            self._call_model([attacked_text])[0].numpy(), axis=1
+        )
 
     def pred_proba_LIME_Sampler(self, attacked_texts):
         """Returns output for the LIME sampler based on the result of calling the model.
@@ -202,27 +207,34 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         # print('pred_proba_LIME_Sampler', attacked_texts)
         # if type(attacked_text) == str:
         #   attacked_text = textattack.shared.attacked_text.AttackedText(attacked_text)
-        
+
         output = torch.stack(self._call_model_LIME_Sampler(attacked_texts), 0)
-        
+
         return output.numpy()
 
     def generateBaseExplanation(self, document, custom_n_samples=None):
         print("generateBaseExplanation_goal")
-        
-        explainer, explanation, prediction, probability = generate_explanation_single(
+
+        (
+            explainer,
+            explanation,
+            prediction,
+            probability,
+        ) = generate_explanation_single(
             self,
             document,
             custom_n_samples=custom_n_samples,
             debug=True,
             return_explainer=True,
         )
-        
+
         self.baseExplanationDataframe = format_explanation_df(
             explanation, target=prediction
         )
         print(self.baseExplanationDataframe)
-        self.base_feature_set = set(self.baseExplanationDataframe.get("feature"))
+        self.base_feature_set = set(
+            self.baseExplanationDataframe.get("feature")
+        )
         self.base_explainer = explainer
 
         # if self.multiclass:
@@ -236,7 +248,12 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         self, document, return_explainer=False, custom_n_samples=None
     ):
         print("generateExplanation_goal")
-        explainer, explanation, prediction, probability = generate_explanation_single(
+        (
+            explainer,
+            explanation,
+            prediction,
+            probability,
+        ) = generate_explanation_single(
             self,
             document,
             custom_n_samples=custom_n_samples,
@@ -257,10 +274,14 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         targets = self.baseExplanationDataframe
         # print(targets)
 
-        targets = format_explanation_df(self.baseExplanation[0], self.basePrediction)
+        targets = format_explanation_df(
+            self.baseExplanation[0], self.basePrediction
+        )
         targets["weight"] = targets["weight"].abs()
         # print(exdf)
-        targets = targets.sort_values(by="weight", ascending=False, ignore_index=True)
+        targets = targets.sort_values(
+            by="weight", ascending=False, ignore_index=True
+        )
 
         if top_n > 0:
             features = []
@@ -371,19 +392,25 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         if self.COM_flag:
             self.baseCOM = self.COM(
                 attacked_text,
-                format_explanation_df(self.baseExplanation[0], self.basePrediction),
+                format_explanation_df(
+                    self.baseExplanation[0], self.basePrediction
+                ),
             )
 
         if self.COM_proportional_flag:
             self.baseCOM = self.COM_proportional(
                 attacked_text,
-                format_explanation_df(self.baseExplanation[0], self.basePrediction),
+                format_explanation_df(
+                    self.baseExplanation[0], self.basePrediction
+                ),
             )
 
         if self.COM_rank_weighted_flag:
             self.baseCOM = self.COM_rank_weight(
                 attacked_text,
-                format_explanation_df(self.baseExplanation[0], self.basePrediction),
+                format_explanation_df(
+                    self.baseExplanation[0], self.basePrediction
+                ),
             )
 
         # Calculate ordered weights for the unperturbed document here and store to prevent recalculation in is_goal_compelte
@@ -391,12 +418,16 @@ class ADV_XAI_GF(ClassificationGoalFunction):
             attacked_text_list = attacked_text.words
             ordered_weights = [0] * len(attacked_text_list)
             features = (
-                format_explanation_df(self.baseExplanation[0], self.basePrediction)
+                format_explanation_df(
+                    self.baseExplanation[0], self.basePrediction
+                )
                 .get("feature")
                 .values.tolist()
             )
             weights = (
-                format_explanation_df(self.baseExplanation[0], self.basePrediction)
+                format_explanation_df(
+                    self.baseExplanation[0], self.basePrediction
+                )
                 .get("weight")
                 .values.tolist()
             )
@@ -408,10 +439,14 @@ class ADV_XAI_GF(ClassificationGoalFunction):
             self.baseOrderedWeights = np.array(ordered_weights)
             self.baseTotalMass = np.sum(np.abs(ordered_weights))
 
-        exdf = format_explanation_df(self.baseExplanation[0], self.basePrediction)
+        exdf = format_explanation_df(
+            self.baseExplanation[0], self.basePrediction
+        )
         exdf["weight"] = exdf["weight"].abs()
         # print(exdf)
-        exdf = exdf.sort_values(by="weight", ascending=False, ignore_index=True)
+        exdf = exdf.sort_values(
+            by="weight", ascending=False, ignore_index=True
+        )
 
         self.baseAbsWeightSum = sum(exdf["weight"])
         self.baseOrderedExplanation = exdf
@@ -422,6 +457,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         result, _ = self.get_result(attacked_text, check_skip=True)
         # print(result)
         # print("++++++++++++++++++=")
+
+        print("ANOTHER init")
+        print(result)
         return result, _
 
     # compute RBO
@@ -481,7 +519,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
 
         feat2weight = dict(zip(features, weights))
         for j in range(len(attacked_text_list)):
-            ordered_weights[j] = feat2weight.get(attacked_text_list[j], 0) * (j + 1)
+            ordered_weights[j] = feat2weight.get(attacked_text_list[j], 0) * (
+                j + 1
+            )
         """
         for i,(f,w) in enumerate(zip(features,weights)):
             try:
@@ -581,7 +621,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         for j in range(len(attacked_text_list)):
             ordered_weights[j] = feat2weight.get(attacked_text_list[j], 0)
 
-        l2 = np.linalg.norm(self.baseOrderedWeights - np.array(ordered_weights))
+        l2 = np.linalg.norm(
+            self.baseOrderedWeights - np.array(ordered_weights)
+        )
         t1 = timer()
         print("l2 took...", t1 - t0)
 
@@ -605,7 +647,10 @@ class ADV_XAI_GF(ClassificationGoalFunction):
 
         for i in range(len(self.baseOrderedExplanation)):
             if self.baseOrderedExplanation["feature"][i] not in features:
-                sim -= self.baseOrderedExplanation["weight"][i] / self.baseAbsWeightSum
+                sim -= (
+                    self.baseOrderedExplanation["weight"][i]
+                    / self.baseAbsWeightSum
+                )
 
         return sim
 
@@ -681,13 +726,16 @@ class ADV_XAI_GF(ClassificationGoalFunction):
             if self.baseOrderedExplanation["feature"][i] != features[i]:
                 current_dissonance += 1
                 dissonant_weights += (
-                    self.baseOrderedExplanation["weight"][i] / self.baseAbsWeightSum
+                    self.baseOrderedExplanation["weight"][i]
+                    / self.baseAbsWeightSum
                 )
                 # print("Features Different, Current Dissonance = ",current_dissonance)
                 # print("Missing Weight = ",self.baseOrderedExplanation['weight'][i]/self.baseAbsWeightSum)
         current_dissonance += diff
         # print('diff = ', diff)
-        return (1 - (current_dissonance / max_dissonance)) * (1 - dissonant_weights)
+        return (1 - (current_dissonance / max_dissonance)) * (
+            1 - dissonant_weights
+        )
 
     def spearman(self, attacked_text, explanation_dataframe):
         # l1 distance between features
@@ -732,7 +780,8 @@ class ADV_XAI_GF(ClassificationGoalFunction):
             if self.baseOrderedExplanation["feature"][i] in features:
                 # print("Base Feature: ",self.baseOrderedExplanation['feature'][i]," loc = ", i, " Perturbed Feature: ", features[features.index(self.baseOrderedExplanation['feature'][i])], " loc = ",features.index(self.baseOrderedExplanation['feature'][i]))
                 current_distance += abs(
-                    i - features.index(self.baseOrderedExplanation["feature"][i])
+                    i
+                    - features.index(self.baseOrderedExplanation["feature"][i])
                 )
             else:
                 current_distance += penalty
@@ -779,12 +828,14 @@ class ADV_XAI_GF(ClassificationGoalFunction):
             if self.baseOrderedExplanation["feature"][i] in features:
                 # print("Base Feature: ",self.baseOrderedExplanation['feature'][i]," loc = ", i, " Perturbed Feature: ", features[features.index(self.baseOrderedExplanation['feature'][i])], " loc = ",features.index(self.baseOrderedExplanation['feature'][i]))
                 current_distance -= abs(
-                    i - features.index(self.baseOrderedExplanation["feature"][i])
+                    i
+                    - features.index(self.baseOrderedExplanation["feature"][i])
                 )
             else:
                 missing_features += 1
                 missing_feature_weight += (
-                    self.baseOrderedExplanation["weight"][i] / self.baseAbsWeightSum
+                    self.baseOrderedExplanation["weight"][i]
+                    / self.baseAbsWeightSum
                 )
                 # print(self.baseOrderedExplanation['feature'][i], " not in ", features)
                 # print("Weight of feature is: ",self.baseOrderedExplanation['weight'][i]/self.baseAbsWeightSum)
@@ -820,11 +871,15 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 )
             return False
 
-        targets = format_explanation_df(perturbedExplanation[0], self.basePrediction)
+        targets = format_explanation_df(
+            perturbedExplanation[0], self.basePrediction
+        )
 
         if len(targets) == 0:
             if self.logger:
-                print("FAILED! Explanation prediction does not cover base prediction")
+                print(
+                    "FAILED! Explanation prediction does not cover base prediction"
+                )
             return False
 
         # check that non of the replacement is within the top-n,
@@ -835,14 +890,16 @@ class ADV_XAI_GF(ClassificationGoalFunction):
             new_modified_index = list(
                 attacked_text.attack_attrs["newly_modified_indices"]
             )[0]
-            from_w = attacked_text.attack_attrs["previous_attacked_text"].words[
-                new_modified_index
-            ]
+            from_w = attacked_text.attack_attrs[
+                "previous_attacked_text"
+            ].words[new_modified_index]
             to_w = attacked_text.words[new_modified_index]
             if self.logger:
                 print("modified {} -> {}".format(from_w, to_w))
 
-            modified_index = list(attacked_text.attack_attrs["modified_indices"])
+            modified_index = list(
+                attacked_text.attack_attrs["modified_indices"]
+            )
             for j in modified_index:
                 to_w_j = attacked_text.words[j]
                 if (
@@ -924,7 +981,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.baseCOM, self.success_threshold
+                            self.tempScore,
+                            self.baseCOM,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -945,7 +1004,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.baseCOM, self.success_threshold
+                            self.tempScore,
+                            self.baseCOM,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -966,7 +1027,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.baseCOM, self.success_threshold
+                            self.tempScore,
+                            self.baseCOM,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -1016,7 +1079,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.bestScore, self.success_threshold
+                            self.tempScore,
+                            self.bestScore,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -1043,7 +1108,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.bestScore, self.success_threshold
+                            self.tempScore,
+                            self.bestScore,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -1070,7 +1137,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.bestScore, self.success_threshold
+                            self.tempScore,
+                            self.bestScore,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -1097,7 +1166,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.bestScore, self.success_threshold
+                            self.tempScore,
+                            self.bestScore,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -1124,7 +1195,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.bestScore, self.success_threshold
+                            self.tempScore,
+                            self.bestScore,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -1151,7 +1224,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 if self.logger:
                     print(
                         "FAILED! Explanation still too similar, {} {} {}".format(
-                            self.tempScore, self.bestScore, self.success_threshold
+                            self.tempScore,
+                            self.bestScore,
+                            self.success_threshold,
                         )
                     )
                 return False
@@ -1165,8 +1240,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         result = results[0] if len(results) else None
         return result, search_over
 
-    def get_results(self, attacked_text_list, replacement=None, check_skip=False):
-        # print("main attack function triggered")
+    def get_results(
+        self, attacked_text_list, replacement=None, check_skip=False
+    ):
         """For each attacked_text object in attacked_text_list, returns a
         result consisting of whether or not the goal has been achieved, the
         output for display purposes, and a score.
@@ -1174,16 +1250,16 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         Additionally returns whether the search is over due to the query
         budget.
         """
+        print("GETTING RESULTS2")
+
         results = []
 
         self.num_queries += len(attacked_text_list)
         model_outputs = self._call_model(attacked_text_list)
 
-        # print("target_original", target_original)
-        for i, (attacked_text, raw_output) in enumerate(
-            zip(attacked_text_list, model_outputs)
+        for attacked_text, raw_output in zip(
+            attacked_text_list, model_outputs
         ):
-            # print("candidate", i)
             displayed_output = self._get_displayed_output(raw_output)
             goal_status = self._get_goal_status(
                 raw_output, attacked_text, check_skip=check_skip
@@ -1198,16 +1274,18 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                     goal_function_score,
                     self.num_queries,
                     self.ground_truth_output,
-                    # base_explanation = self.baseExplanationDataframe, #This was breaking the standard textattack flow
-                    # self.attacked_explanation=
+                    # base_explanation = self.baseExplanationDataframe,
+                    #This was breaking the standard textattack flow
                 )
             )
-        # print("RESULTS GET_RESULTS", len(results))
+
         return results, False
 
     def _get_goal_status(self, model_output, attacked_text, check_skip=True):
         # print("Calling _get_goal_status")
-        should_skip = check_skip and self._should_skip(model_output, attacked_text)
+        should_skip = check_skip and self._should_skip(
+            model_output, attacked_text
+        )
         if should_skip:
             if self.logger:
                 print("STATUS: Skipped")
@@ -1241,6 +1319,10 @@ class ADV_XAI_GF(ClassificationGoalFunction):
 
     def _get_score(self, model_output, _):
         if self.RBO_flag:
+
+            print("getting RBO score")
+            print(self.tempScore)
+
             # Checks dissimilarity rather than similarity
             if self.tempScore is not None:
                 return 1 - self.tempScore
@@ -1336,7 +1418,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         the cache, queries model and stores prediction in cache.
         """
         # print(attacked_text_list,type(attacked_text_list))
-        
+
         if type(attacked_text_list) is tuple:
             attacked_text_list = [
                 textattack.shared.attacked_text.AttackedText(string)
@@ -1347,10 +1429,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                 textattack.shared.attacked_text.AttackedText(string)
                 for string in attacked_text_list[0]
             ]
-        
-        local_cache = set()        
+
+        local_cache = set()
         if not self.use_cache:
-            
             return self._call_model_uncached(attacked_text_list)
 
         else:
@@ -1367,13 +1448,15 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                     if text.text not in local_cache:
                         uncached_list.append(text)
                         local_cache.add(text.text)
-            
+
             outputs = self._call_model_uncached(uncached_list)
-            
+
             for text, output in zip(uncached_list, outputs):
                 self._call_model_cache[text] = output
-            all_outputs = [self._call_model_cache[text] for text in attacked_text_list]
-            
+            all_outputs = [
+                self._call_model_cache[text] for text in attacked_text_list
+            ]
+
             return all_outputs
 
     def extra_repr_keys(self):
