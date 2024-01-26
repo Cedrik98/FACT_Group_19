@@ -12,8 +12,8 @@ import torch
 from datasets.arrow_dataset import Dataset
 from textattack.models.wrappers.huggingface_model_wrapper import HuggingFaceModelWrapper
 
-from src.attack_recipes.attack import perform_attack
-from src.attack_recipes.gen_attacker import generate_attacker
+from src.attack.attack import perform_attack
+from src.attack.gen_attacker import generate_attacker
 from src.constants import EXPERIMENT_LOGGING_PATH, HF_ACCOUNT
 from src.dataset import DATASETS, load_data, process_experiment_data
 from src.model import MODELS, load_trained_model_and_tokenizer
@@ -70,9 +70,10 @@ def run_experiment(args: Namespace):
     print(attacker)
 
     # Perform attack
-    results, rbos, sims = perform_attack(
+    results = perform_attack(
         data, args, attacker, stopwords, str(output_path)
     )
+    
     print(results)
 
 
@@ -102,9 +103,7 @@ if __name__ == "__main__":
     parser.add_argument("--label-col", type=str, default="label")
     parser.add_argument("--text-col", type=str, default="text")
     parser.add_argument("--device", type=str, default="cuda")
-    parser.add_argument(
-        "--batch-size", type=int, default=512
-    )  # TODO: change back to 512
+    parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--max-candidate", type=int, default=10)
     parser.add_argument("--success-threshold", type=float, default=0.5)
     parser.add_argument("--rbo-p", type=float, default=0.8)

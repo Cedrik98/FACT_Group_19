@@ -16,7 +16,8 @@ from src.goals.goal_function import ADV_XAI_GF
 from src.goals.initialgoal import initialIndexGF
 from src.search_methods.search_random import GreedyWordSwapWIR_RANDOM
 
-class RANDOM_BASELINE(AttackRecipe):
+
+class RandomBaseline(AttackRecipe):
     @staticmethod
     def build(
         model_wrapper,
@@ -36,9 +37,10 @@ class RANDOM_BASELINE(AttackRecipe):
         similarity_measure="rbo",
         rbo_p=0.8,
         greedy_search=False,
-        search_method = 'xaifooler',
-		crossover = 'uniform',
-		parent_selection = 'roulette'
+        search_method="xaifooler",
+        crossover="uniform",
+        parent_selection="roulette",
+        **kwargs,
     ):
         # Swap words with their 10 closest embedding nearest-neighbors.
         # Embedding: Counter-fitted PARAGRAM-SL999 vectors.
@@ -88,7 +90,7 @@ class RANDOM_BASELINE(AttackRecipe):
             skip_text_shorter_than_window=True,
         )
         constraints.append(use_constraint)
-        
+
         # RBO based goal function
         goal_function = ADV_XAI_GF(
             model_wrapper,
@@ -104,7 +106,7 @@ class RANDOM_BASELINE(AttackRecipe):
             similarity_measure=similarity_measure,
             p_RBO=rbo_p,
         )
-       
+
         # This goal function is used for the initial ranking of which indicies to perturb first.
         indexGoalFunction = initialIndexGF(
             model_wrapper,

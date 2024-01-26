@@ -19,7 +19,7 @@ reportMissingImports = true
 pythonVersion = "3.8.17"
 
 [tool.pylint]
-max-line-length = 120
+max-line-length = 80
 disable = [
     "C0415", # Allow imports outside of top-level
     "W0511", # Allow TODO comments

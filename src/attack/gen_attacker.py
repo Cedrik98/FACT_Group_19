@@ -1,8 +1,8 @@
 import numpy as np
 import textattack
 
-from src.attack_recipes.adversarial_xai_rbo import ADV_XAI_Attack
-from src.attack_recipes.random_baseline import RANDOM_BASELINE
+from src.attack.adversarial_xai_rbo import ADV_XAI_Attack
+from src.attack.random_baseline import RandomBaseline
 
 
 def build_attacker(
@@ -90,7 +90,7 @@ def generate_attacker(
         return attacker1, attacker2
     elif args.method == "random":
         attacker = build_attacker(
-            RANDOM_BASELINE,
+            RandomBaseline,
             args,
             model_wrapper,
             categories,
@@ -101,7 +101,7 @@ def generate_attacker(
 
     elif args.method == "truerandom":
         attacker = build_attacker(
-            RANDOM_BASELINE,
+            RandomBaseline,
             args,
             model_wrapper,
             categories,
