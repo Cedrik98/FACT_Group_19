@@ -149,7 +149,7 @@ def perform_attack(data, args, attacker, stopwords, filename):
         rboOutput = RBO(targetList, baseList, p=args.rbo_p)
         print("rboOutput", rboOutput)
         rbos.append(rboOutput)
-
+        
         simOutput = generate_comparative_similarities(
             result.perturbed_result.attacked_text.text, exp1, exp2
         )
