@@ -6,7 +6,7 @@ from src.attack.random_baseline import RandomBaseline
 
 
 def build_attacker(
-    ATTACK_CLASS,
+    attack_class,
     args,
     model_wrapper,
     categories,
@@ -24,8 +24,9 @@ def build_attacker(
         samples = 2500
     else:
         samples = 5000
+
     pbar = None
-    attack = ATTACK_CLASS.build(
+    attack = attack_class.build(
         model_wrapper,
         categories=categories,
         featureSelector=args.top_n,
@@ -53,7 +54,11 @@ def build_attacker(
         disable_stdout=False,
     )
 
-    attacker = textattack.Attacker(attack, textattack.datasets.Dataset([]), attack_args)
+    attacker = textattack.Attacker(
+        attack,
+        textattack.datasets.Dataset([]),
+        attack_args,
+    )
 
     return attacker
 
@@ -66,7 +71,12 @@ def generate_attacker(
 ):
     if args.method == "xaifooler":
         attacker = build_attacker(
-            ADV_XAI_Attack, args, model_wrapper, categories, csvName, custom_seed=None
+            ADV_XAI_Attack,
+            args,
+            model_wrapper,
+            categories,
+            csvName,
+            custom_seed=None,
         )
 
     elif args.method == "inherent":
@@ -112,7 +122,12 @@ def generate_attacker(
 
     elif args.method == "ga":
         attacker = build_attacker(
-            ADV_XAI_Attack, args, model_wrapper, categories, csvName, custom_seed=None
+            ADV_XAI_Attack,
+            args,
+            model_wrapper,
+            categories,
+            csvName,
+            custom_seed=None,
         )
 
     return attacker

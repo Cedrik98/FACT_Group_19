@@ -5,6 +5,9 @@ from scipy import stats
 
 
 def compute_abs(exp_df1, exp_df2, top_n):
+    exp_df1["rank"] = exp_df1.index
+    exp_df2["rank"] = exp_df2.index
+
     rank1 = exp_df1[:top_n]["rank"].values
     rank2 = (
         exp_df2.set_index("feature").reindex(exp_df1["feature"])[:top_n]["rank"].values

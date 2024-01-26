@@ -5,7 +5,6 @@ authors = [
   {name = "Jakob Kaiser"},
   {name = "Cedrik Blommestijn"},
   {name = "Adriana Cabrera"},
-  {name = "Owen de Jong,"},
 ]
 description = """This project tries to reproduce results from the paper 'Are
 Your Explanations Reliable?' Investigating the Stability of LIME in Explaining
@@ -27,3 +26,6 @@ disable = [
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.black]
+line-length = 79
