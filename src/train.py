@@ -2,9 +2,9 @@
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
-from src.constants import HF_ACCOUNT, TRAIN_LOGGING_PATH
+from src.utils.constants import HF_ACCOUNT, TRAIN_LOGGING_PATH
 from src.dataset import DATASETS
-from src.model import MODELS, save_model_and_tokenizer
+from src.utils.model import MODELS, save_model_and_tokenizer
 
 
 def compute_metrics():

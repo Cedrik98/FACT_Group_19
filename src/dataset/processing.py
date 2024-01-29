@@ -6,6 +6,7 @@ import textattack
 # from datasets import Dataset
 from datasets.arrow_dataset import Dataset
 
+
 def process_experiment_data(dataset: Dataset, args: Namespace, stopwords):
     data = []
     for i in range(len(dataset)):
@@ -25,10 +26,10 @@ def process_experiment_data(dataset: Dataset, args: Namespace, stopwords):
 
     categories = list(np.unique([tmp[1] for tmp in data]))
     print("CATEGORIES", categories)
-    print(len(data))
+
     if args.num > 0:
-        rng = np.random.default_rng(seed=args.seed_dataset)
+        rng = np.random.default_rng(seed=args.seed)
         rng.shuffle(data)
         data = data[: args.num]
-    print(len(data))
+
     return data, categories

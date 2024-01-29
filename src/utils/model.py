@@ -12,10 +12,10 @@ MODELS = [
 
 
 def load_trained_model_and_tokenizer(
-    model_name, dataset_name, hf_account, categories
+    model_name, dataset_name, hf_account
 ) -> Tuple[AutoModelForSequenceClassification, AutoTokenizer]:
     repo_name = f"{hf_account}/{model_name}-{dataset_name}-trained"
-    model = AutoModelForSequenceClassification.from_pretrained(repo_name, num_labels=len(categories))
+    model = AutoModelForSequenceClassification.from_pretrained(repo_name)
     tokenizer = AutoTokenizer.from_pretrained(repo_name)
 
     # Put model on device
