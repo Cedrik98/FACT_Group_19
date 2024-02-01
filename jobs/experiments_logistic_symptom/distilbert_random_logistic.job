@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu
+#SBATCH --gpus=1
+#SBATCH --job-name=DistilbertRandomLogistic
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=18
+#SBATCH --time=12:00:00
+#SBATCH --output=./results/slurm_logs/slurm_output_experiment_distilbert_base_uncased_random_logistic_%A.out
+
+module purge
+module load 2023
+module load Python/3.11.3-GCCcore-12.3.0
+
+# Store cache in scratch for read write speed.
+export HF_DATASETS_CACHE="/scratch-local/scur1035"
+cd $HOME/FACT_Group_19/
+source ./venv/bin/activate
+./run.sh experiment --dataset="symptom_to_diagnosis" --model="distilbert-base-uncased" --method="random" --num=1000 --lime-sr=2500 --max-candidates=3

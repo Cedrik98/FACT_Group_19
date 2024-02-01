@@ -9,7 +9,8 @@ def build_attacker(attack_class, args, model_wrapper, categories, greedy_search=
         args.max_candidates,
         args.modify_rate,
         top_n_features = args.top_n,
-        greedy_search=greedy_search        
+        greedy_search=greedy_search,
+        lime_sr = args.lime_sr    
     )
     attack.cuda_()
     

@@ -58,7 +58,7 @@ if __name__ == "__main__":
         "--dataset",
         type=str,
         choices=DATASETS,
-        default="imdb",
+        default="md_gender_bias",
         help="Dataset to use for experiment",
     )
     parser.add_argument(
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--min-length",
         type=int,
-        default=5,
+        default=10,
         help="Minimum length for each datasample, a sample is skipped if it is"
         "shorter than this length",
     )

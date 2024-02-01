@@ -26,9 +26,11 @@ class RandomBaseline(AttackRecipe):
         max_candidates=10, 
         modify_rate=0.2, 
         top_n_features=1,
-        greedy_search=False):
+        greedy_search=False,
+        lime_sr=1500
+        ):
         # Goal function
-        goal_function = ADV_XAI_GF(model_wrapper, categories,top_n_features=top_n_features)
+        goal_function = ADV_XAI_GF(model_wrapper, categories,top_n_features=top_n_features, lime_sr=lime_sr)
         # Constraints
         constraints = [
             RepeatModification(), # No repeated modification of already modified words

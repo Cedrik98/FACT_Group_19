@@ -15,7 +15,8 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         categories,
         p_RBO = 0.80,
         top_n_features = 1,
-        success_threshold=0.70
+        success_threshold=0.70,
+        lime_sr = 1500
         
         
     ):
@@ -25,7 +26,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         self.temp_score = None
         self.p_RBO = p_RBO
         self.success_threshold = success_threshold
-        self.n_samples = 10
+        self.n_samples = lime_sr
         self.top_n_features = top_n_features
 
     def init_attack_example(self, attacked_text, ground_truth_output):        
@@ -179,8 +180,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
             # )
                     
             return False
-        self.final_explanation = perturbed_explanation
-        # print("FOUND GOAL COMPLETE")
+        self.final_explanation = perturbed_explanation        
         return True
 
     def pred_proba(self, attacked_text):
