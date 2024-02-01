@@ -84,7 +84,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--min-length",
         type=int,
-        default=10,
+        default=5,
         help="Minimum length for each datasample, a sample is skipped if it is"
         "shorter than this length",
     )

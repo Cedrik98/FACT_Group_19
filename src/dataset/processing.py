@@ -26,10 +26,11 @@ def process_experiment_data(dataset: Dataset, args: Namespace, stopwords):
 
     categories = list(np.unique([tmp[1] for tmp in data]))
     print("CATEGORIES", categories)
-
+    print(args.num)
     if args.num > 0:
         rng = np.random.default_rng(seed=args.seed)
         rng.shuffle(data)
         data = data[: args.num]
-
+    print("HELLO")
+    print(len(data))
     return data, categories

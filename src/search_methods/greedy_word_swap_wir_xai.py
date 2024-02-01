@@ -56,15 +56,15 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
 
             to_modify_word = cur_result.attacked_text.words[index_order[i]]
 
-            print("\n==========================================")
-            print("MODIFYING", to_modify_word)
+            # print("\n==========================================")
+            # print("MODIFYING", to_modify_word)
             # print("features", self.goal_function.top_features["feature"])
             if to_modify_word.lower() in self.goal_function.top_features["feature"].values:
-                print(
-                    "preventing from modifying top-n features",
-                    to_modify_word.lower(),
-                    self.goal_function.top_features["feature"].values,
-                )
+                # print(
+                #     "preventing from modifying top-n features",
+                #     to_modify_word.lower(),
+                #     self.goal_function.top_features["feature"].values,
+                # )
                 i += 1
                 continue
 
