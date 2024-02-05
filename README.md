@@ -8,7 +8,7 @@ XAI and Adversarial Attack"* [(Bnurger et al., 2023)](https://arxiv.org/pdf/2305
 ## Local setup
 Instructions for installing dependencies.
 
-Make sure you are using Python 3.8.17, [pyenv](https://github.com/pyenv/pyenv) can be used to manage Python versions.
+Make sure you are using Python 3.11.4, [pyenv](https://github.com/pyenv/pyenv) can be used to manage Python versions.
 
 Make a virtual environment.
 ```
@@ -25,74 +25,25 @@ Install necessary packages.
 pip install -r requirements.txt
 ```
 
+Fix deprecated regex flag of eli5.
+```
+./fix.sh
+```
+
 We can see all possible options and usage using the following command:
 ```
 ./run.sh --help
 ```
-
-### Pre-commit hooks
-Run the command:
+## Recommended hyperparameters
+If you want to run the code quickly for testing or reviewing use a small number of samples `--lime-sr`. One recommended experiment for example:
 ```
-pre-commit install
-```
-
-## Adding datasets and models
-To add a new dataset, a function needs to be added in `src/datasets/datasets.py`,
-It will also need to be added to the command line parser in `src/train.py`. Lastly
-if we want to backup models on Huggingface, a huggingface model needs to be
-insantiated (Ask this to Jakob). Models can be used off hugging face but the same
-applies as for datasets, it will need to be added to the command line and a new
-huggingface model will need to be made.
-
-## Using Snellius
-
-### SSH access to Snellius
-Copy a public SSH key to the server so you do not need to type the password
-every time you log in.
-```
-ssh-copy-id -i ~/.ssh/id_ed25519.pub scur1035@@snellius.surf.nl
+/run.sh experiment --dataset="md_gender_bias" --model="distilbert-base-uncased" --method="xaifooler" --num=5 --lime-sr=10 --max-candidates=3 --batch-size=8
 ```
 
-Additionaly you can add these lines to `~/.ssh/config` where you fill-in `<host-name>` and `team-user-name`:
+For training use the default hyperparameters and run:
 ```
-Host snellius
-    HostName <host-name>
-    User <team-user-name>
+./run.sh train
 ```
-
-After this, you should be able to ssh into Snellius using the command `ssh snellius`.
-
-### Git on Snellius
-A git repo has already been set up on Snellius. Changes can be pulled and pushed
-from that repository.
-
-### Using Snellius
-All jobfiles are located in `./jobs`, and a job can be run with the command:
-
-`
-sbatch ./jobs/<job-file>
-`
-
-You can see jobs in the queue using the command:
-
-`
-squeue
-`
-
-You can then use a JOB-ID to show more information about a job with the command:
-
-`
-scontrol show job <JOB-ID>
-`
-
-Lastly, you can cancel a job using:
-
-`
-scancel <JOB-ID>
-`
-
-### Logs
-Logs should be written to `./results/slurm_logs/`
 
 ## Requirements
 Ideally, we want to run our code in Python 3.11.3 as Snellius officially support this.
@@ -112,3 +63,6 @@ this by executing the command `./utils/fix.sh`.
 - [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
 - [textattack_example](https://textattack.readthedocs.io/en/latest/2notebook/1_Introduction_and_Transformations.html)
 - `CUDA_VISIBLE_DEVICES=""` this command can be used to run code on the CPU only.
+
+
+
