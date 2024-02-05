@@ -25,24 +25,27 @@ Install necessary packages.
 pip install -r requirements.txt
 ```
 
-Fix deprecated regex flag of eli5.
+Fix the deprecated regex flag of eli5.
 ```
 ./fix.sh
 ```
 
-All possible options and usage can be seen using the following command:
-```
-./run.sh --help
-```
-## Recommended hyperparameters
-If you want to run the code quickly for testing or reviewing use a small number of samples `--lime-sr`. One recommended experiment for example:
-```
-/run.sh experiment --dataset="md_gender_bias" --model="distilbert-base-uncased" --method="xaifooler" --num=5 --lime-sr=10 --max-candidates=3 --batch-size=8
-```
+All possible options and usage can be seen using the following the `--help `
 
-For training use the default hyperparameters and run:
+### Training
+For training, to use the default parameters run the following command:
+
 ```
 ./run.sh train
+```
+
+All model dataset combinations can be trained with the `--all` flag.
+
+### Experiments
+
+If you want to run the code quickly for testing or reviewing use a small number of samples `--lime-sr`. One recommended experiment that runs within reasonable time for example could be:
+```
+/run.sh experiment --dataset="md_gender_bias" --model="distilbert-base-uncased" --method="xaifooler" --num=5 --lime-sr=10 --max-candidates=3 --batch-size=8
 ```
 
 ## Requirements
@@ -56,13 +59,5 @@ regex [docs](https://docs.python.org/3/library/re.html?highlight=re%20global%20f
 
 This can be seen as the `/venv/lib/python3.11/site-packages/eli5/lime/textutils.py` file
 as can be seen in the line: `DEFAULT_TOKEN_PATTERN = r"(?u)\b\w+\b"`. In this line of code
-`(?u)` can simply be removed and all code should run as expected. I wrote a script to automate
+`(?u)` can simply be removed and all code should run as expected. A script is provided to automate
 this by executing the command `./utils/fix.sh`.
-
-## List of useful documentation
-- [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
-- [textattack_example](https://textattack.readthedocs.io/en/latest/2notebook/1_Introduction_and_Transformations.html)
-- `CUDA_VISIBLE_DEVICES=""` this command can be used to run code on the CPU only.
-
-
-
