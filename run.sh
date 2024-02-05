@@ -7,8 +7,7 @@ function usage() {
     echo -e "Usage:
     help       \t\t\t- print this help message
     train      \t\t\t- train language models
-    experiment \t\t\t- run various experiments
-    evaluate   \t\t\t- run evaluation on experiment results"
+    experiment \t\t\t- run various experiments"
 }
 
 if [[ $1 == ?(help|--help|-h) ]]; then
