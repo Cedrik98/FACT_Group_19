@@ -42,8 +42,6 @@ def generate_explanation_single(
             max_iter=300,
             n_jobs=-1,
         ),
-        # clf = CULogisticRegression(class_weight='balanced', max_iter=100, verbose=True),
-        # clf=DecisionTreeClassifier(class_weight='balanced', random_state=random_seed, max_depth=10),
         vec=CountVectorizer(stop_words="english", lowercase=True),
         n_samples=custom_n_samples,
         random_state=random_seed,
@@ -53,12 +51,9 @@ def generate_explanation_single(
     prediction = categories[goal.get_output(document)]    
     probability = goal.pred_proba(document)    
     probability = float(probability.max())
-    
-    start = timer()
+        
     explainer.fit(document.text, goal.pred_proba_LIME_Sampler)
-    end = timer()
-
-    # print("Lime took...", end - start)
+    
 
     explanation = explainer.explain_prediction(
         target_names=categories,

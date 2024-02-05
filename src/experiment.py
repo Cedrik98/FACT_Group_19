@@ -55,6 +55,13 @@ def run_experiment(args: Namespace):
 if __name__ == "__main__":    
     parser = ArgumentParser(description="XAIFOOLER Experiment")
     parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=8,
+        help="Batchsize to use for generating datapoints on which to train"
+        "LIME",
+    )
+    parser.add_argument(
         "--dataset",
         type=str,
         choices=DATASETS,

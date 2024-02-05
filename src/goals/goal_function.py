@@ -16,9 +16,8 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         p_RBO = 0.80,
         top_n_features = 1,
         success_threshold=0.70,
-        lime_sr = 1500
-        
-        
+        lime_sr = 1500,
+        batch_size =8        
     ):
         super().__init__(model_wrapper)
         self.model = model_wrapper          
@@ -28,6 +27,7 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         self.success_threshold = success_threshold
         self.n_samples = lime_sr
         self.top_n_features = top_n_features
+        self.batch_size=batch_size
 
     def init_attack_example(self, attacked_text, ground_truth_output):        
         self.initial_attacked_text = attacked_text
@@ -48,10 +48,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         )
         
         if self.base_explanation_df.empty:
-            # print("Empyt base prediction")
+            
             return False
-        # print(self.base_explanation_df)
-
+        
         self.num_queries = 0        
         self.base_feature_set = set(self.base_explanation_df.get("feature"))
         
@@ -68,7 +67,6 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         return result, search_over
 
     def get_results(self, attacked_text_list, replacement=None, check_skip=False):
-        # print("main attack function triggered")
         """For each attacked_text object in attacked_text_list, returns a
         result consisting of whether or not the goal has been achieved, the
         output for display purposes, and a score.
@@ -81,7 +79,6 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         self.num_queries += len(attacked_text_list)
         model_outputs = self._call_model(attacked_text_list)
 
-        # print("target_original", target_original)
         for i, (attacked_text, raw_output) in enumerate(
             zip(attacked_text_list, model_outputs)
         ):
@@ -117,13 +114,12 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         # Generate explanation
         perturbed_explanation = generate_explanation_single(self, attacked_text, self.categories, custom_n_samples=self.n_samples)
         if self.base_prediction != perturbed_explanation[1]:
-            # print("FAILED! Base prediction class must be the same as the attacked prediction class")
+            
             return False
     
         # Set generated explanation as target explanation
         targets = format_explanation_df(perturbed_explanation[0], perturbed_explanation[1])
         if len(targets) == 0:
-            # print("FAILED! Explanation prediction does not cover base prediction")
 
             return False
         
@@ -154,7 +150,6 @@ class ADV_XAI_GF(ClassificationGoalFunction):
                         return False       
         
         if set(targets['feature'][:self.top_n_features]) == set(self.top_features['feature']):
-            # print("FAILED! No feature is has a lower rank")
 
             return False       
             
@@ -169,18 +164,16 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         
         rboOutput = RBO(target_list, base_list, p=self.p_RBO)
         if rboOutput == False:
+
             return False
-        # print("Internal rboOutput", rboOutput)
+        
         self.temp_score = rboOutput
         if self.temp_score > self.success_threshold:
-            # print(
-            #     "FAILED! Explanation still too similar, {} {}".format(
-            #         self.temp_score, self.success_threshold
-            #     )
-            # )
-                    
+            
             return False
-        self.final_explanation = perturbed_explanation        
+        
+        self.final_explanation = perturbed_explanation    
+
         return True
 
     def pred_proba(self, attacked_text):
@@ -195,13 +188,9 @@ class ADV_XAI_GF(ClassificationGoalFunction):
         """Returns output for the LIME sampler based on the result of calling the model.
         Expects default LIME sampler output as a tuple of str.
         Use pred_proba for individual str or attacked_text
-        """
-        # print('pred_proba_LIME_Sampler', attacked_texts)
-        # if type(attacked_texts) == str:
-        #   attacked_text = AttackedText(attacked_texts)
-        
-        # output = torch.stack(self._call_model_LIME_Sampler(attacked_texts), 0)
+        """        
         output = self._call_model_LIME_Sampler(attacked_texts)
+
         return output.numpy()   
     
     def _call_model_LIME_Sampler(self, attacked_text_list):

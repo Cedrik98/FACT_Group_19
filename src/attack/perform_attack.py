@@ -37,19 +37,12 @@ def perform_attack(data, attack, args):
             init_label_pred = attack.goal_function.get_output(example)
             try:
                 results = attack.attack(example, init_label_pred)
-            except Exception as e:
-                # print("==================================")
-                # print("ATTACK FAILED")
-                # print("Probably LIME returned no explanation")
-                # print(e)
-                # print("==================================")
+            except Exception as e:                
                 count_error += 1
                 continue
+
             if isinstance(results, SuccessfulAttackResult):
                 count_suc += 1
-                # print("==================================")
-                # print("ATTACK SUCCESFULL")
-                # print("==================================")
                 
                 sent1 = results.original_text()
                 sent2 = results.perturbed_text()            
@@ -63,12 +56,6 @@ def perform_attack(data, attack, args):
                 base_list = df1.get("feature").values
                 target_list = df2.get("feature").values
 
-                # print("DATAFRAMES")
-                # print("orig")
-                # print(df1)
-                # print("perturbed")
-                # print(df2)
-
                 abs_score = compute_abs(df1, df2, top_n=args.top_n)
                 ins_score = compute_ins(df1, df2, top_n=args.top_n)
                 rc_score = compute_rc(target_list, base_list, top_n=args.top_n)
@@ -76,10 +63,6 @@ def perform_attack(data, attack, args):
 
                 result.append(
                     {
-                        # "example_before": sent1,
-                        # "example_after": sent2,
-                        # "exp_before": exp1,
-                        # "exp_after": exp2,
                         "abs_score": abs_score,
                         "ins_score": ins_score,
                         "rc_score": rc_score,
@@ -87,11 +70,7 @@ def perform_attack(data, attack, args):
                     }
                 )
             else:
-                # print(results)
                 count_fail += 1
-                # print("==================================")
-                # print("ATTACK FAILED")
-                # print("==================================")
 
         elif args.method == "inherent":
             sent1 = example.text
@@ -107,13 +86,7 @@ def perform_attack(data, attack, args):
                     random_seed = np.random.choice(1000),
                     custom_n_samples=args.lime_sr,
                 )
-            except Exception as e:
-                count_error += 1
-                # print("==================================")
-                # print("ATTACK FAILED")
-                # print("Something with Lime no solution yet")
-                # print(e)
-                # print("==================================")
+            except Exception as e:                
                 count_error += 1
                 continue
             
@@ -123,15 +96,8 @@ def perform_attack(data, attack, args):
             base_list = df1.get("feature").values
             target_list = df2.get("feature").values
             if base_list != [] and target_list != []: 
-                count_suc += 1           
-                # print(base_list)
-                # print(target_list)
-                # print("DATAFRAMES")
-                # print("orig")
-                # print(df1)
-                # print("perturbed")
-                # print(df2)
-
+                count_suc += 1   
+       
                 abs_score = compute_abs(df1, df2, top_n=args.top_n)
                 ins_score = compute_ins(df1, df2, top_n=args.top_n)
                 rc_score = compute_rc(target_list, base_list, top_n=args.top_n)
@@ -139,10 +105,6 @@ def perform_attack(data, attack, args):
 
                 result.append(
                     {
-                        # "example_before": sent1,
-                        # "example_after": sent2,
-                        # "exp_before": exp1,
-                        # "exp_after": exp2,
                         "abs_score": abs_score,
                         "ins_score": ins_score,
                         "rc_score": rc_score,

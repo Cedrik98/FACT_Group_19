@@ -10,7 +10,8 @@ def build_attacker(attack_class, args, model_wrapper, categories, greedy_search=
         args.modify_rate,
         top_n_features = args.top_n,
         greedy_search=greedy_search,
-        lime_sr = args.lime_sr    
+        lime_sr = args.lime_sr, 
+        batch_size=args.batch_size 
     )
     attack.cuda_()
     
@@ -25,5 +26,7 @@ def generate_attacker(args, model_wrapper, categories):
         # Attack class does not matter 
         attacker1 = build_attacker(RandomBaseline, args, model_wrapper, categories)
         attacker2 = build_attacker(RandomBaseline, args, model_wrapper, categories)
+
         return attacker1, attacker2
+    
     return attacker

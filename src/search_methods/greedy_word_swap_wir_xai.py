@@ -56,15 +56,7 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
 
             to_modify_word = cur_result.attacked_text.words[index_order[i]]
 
-            # print("\n==========================================")
-            # print("MODIFYING", to_modify_word)
-            # print("features", self.goal_function.top_features["feature"])
             if to_modify_word.lower() in self.goal_function.top_features["feature"].values:
-                # print(
-                #     "preventing from modifying top-n features",
-                #     to_modify_word.lower(),
-                #     self.goal_function.top_features["feature"].values,
-                # )
                 i += 1
                 continue
 
@@ -89,7 +81,6 @@ class GreedyWordSwapWIR_XAI(SearchMethod):
             # If we succeeded, return the index with best similarity.
             if cur_result.goal_status == GoalFunctionResultStatus.SUCCEEDED:
                 best_result = cur_result
-                # @TODO: Use vectorwise operations
                 max_similarity = -float("inf")
                 for result in results:
                     if result.goal_status != GoalFunctionResultStatus.SUCCEEDED:
