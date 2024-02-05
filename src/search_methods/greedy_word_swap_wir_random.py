@@ -12,8 +12,6 @@ https://github.com/jind11/TextFooler.
 """
 
 import numpy as np
-import torch
-from torch.nn.functional import softmax
 
 from textattack.goal_function_results import GoalFunctionResultStatus
 from textattack.search_methods import SearchMethod

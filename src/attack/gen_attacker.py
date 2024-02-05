@@ -1,7 +1,6 @@
 from src.attack_classes.random_baseline import RandomBaseline
 from src.attack_classes.adv_xai_attack import ADV_XAI_Attack
 
-
 def build_attacker(attack_class, args, model_wrapper, categories, greedy_search=False):
     attack = attack_class.build(
         model_wrapper, 

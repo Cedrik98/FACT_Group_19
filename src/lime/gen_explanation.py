@@ -16,9 +16,6 @@ from eli5.lime.samplers import MaskingTextSampler
 from sklearn.feature_extraction.text import CountVectorizer
 from timeit import default_timer as timer
 from sklearn.linear_model import LogisticRegression
-# from sklearn.tree import DecisionTreeClassifier
-
-
 
 def check_bias(x, y):
     return "<BIAS>" not in x
@@ -51,7 +48,7 @@ def generate_explanation_single(
     prediction = categories[goal.get_output(document)]    
     probability = goal.pred_proba(document)    
     probability = float(probability.max())
-        
+
     explainer.fit(document.text, goal.pred_proba_LIME_Sampler)
     
 
