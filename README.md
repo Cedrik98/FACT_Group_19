@@ -30,7 +30,7 @@ Fix deprecated regex flag of eli5.
 ./fix.sh
 ```
 
-We can see all possible options and usage using the following command:
+All possible options and usage can be seen using the following command:
 ```
 ./run.sh --help
 ```
