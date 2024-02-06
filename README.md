@@ -8,7 +8,7 @@ XAI and Adversarial Attack"* [(Bnurger et al., 2023)](https://arxiv.org/pdf/2305
 ## Local setup
 Instructions for installing dependencies.
 
-Make sure you are using Python 3.8.17, [pyenv](https://github.com/pyenv/pyenv) can be used to manage Python versions.
+Make sure you are using Python 3.11.4, [pyenv](https://github.com/pyenv/pyenv) can be used to manage Python versions.
 
 Make a virtual environment.
 ```
@@ -25,74 +25,27 @@ Install necessary packages.
 pip install -r requirements.txt
 ```
 
-We can see all possible options and usage using the following command:
+Fix the deprecated regex flag of eli5.
 ```
-./run.sh --help
-```
-
-### Pre-commit hooks
-Run the command:
-```
-pre-commit install
+./fix.sh
 ```
 
-## Adding datasets and models
-To add a new dataset, a function needs to be added in `src/datasets/datasets.py`,
-It will also need to be added to the command line parser in `src/train.py`. Lastly
-if we want to backup models on Huggingface, a huggingface model needs to be
-insantiated (Ask this to Jakob). Models can be used off hugging face but the same
-applies as for datasets, it will need to be added to the command line and a new
-huggingface model will need to be made.
+All possible options and usage can be seen using the following the `--help `
 
-## Using Snellius
-
-### SSH access to Snellius
-Copy a public SSH key to the server so you do not need to type the password
-every time you log in.
+### Training
+For training, to use the default parameters run the following command:
 ```
-ssh-copy-id -i ~/.ssh/id_ed25519.pub scur1035@@snellius.surf.nl
+./run.sh train
 ```
 
-Additionaly you can add these lines to `~/.ssh/config` where you fill-in `<host-name>` and `team-user-name`:
+All model dataset combinations can be trained with the `--all` flag.
+
+### Experiments
+
+If you want to run the code quickly for testing or reviewing use a small number of samples `--lime-sr`. One recommended experiment that runs within reasonable time for example could be:
 ```
-Host snellius
-    HostName <host-name>
-    User <team-user-name>
+/run.sh experiment --dataset="md_gender_bias" --model="distilbert-base-uncased" --method="xaifooler" --num=5 --lime-sr=10 --max-candidates=3 --batch-size=8
 ```
-
-After this, you should be able to ssh into Snellius using the command `ssh snellius`.
-
-### Git on Snellius
-A git repo has already been set up on Snellius. Changes can be pulled and pushed
-from that repository.
-
-### Using Snellius
-All jobfiles are located in `./jobs`, and a job can be run with the command:
-
-`
-sbatch ./jobs/<job-file>
-`
-
-You can see jobs in the queue using the command:
-
-`
-squeue
-`
-
-You can then use a JOB-ID to show more information about a job with the command:
-
-`
-scontrol show job <JOB-ID>
-`
-
-Lastly, you can cancel a job using:
-
-`
-scancel <JOB-ID>
-`
-
-### Logs
-Logs should be written to `./results/slurm_logs/`
 
 ## Requirements
 Ideally, we want to run our code in Python 3.11.3 as Snellius officially support this.
@@ -105,10 +58,5 @@ regex [docs](https://docs.python.org/3/library/re.html?highlight=re%20global%20f
 
 This can be seen as the `/venv/lib/python3.11/site-packages/eli5/lime/textutils.py` file
 as can be seen in the line: `DEFAULT_TOKEN_PATTERN = r"(?u)\b\w+\b"`. In this line of code
-`(?u)` can simply be removed and all code should run as expected. I wrote a script to automate
+`(?u)` can simply be removed and all code should run as expected. A script is provided to automate
 this by executing the command `./utils/fix.sh`.
-
-## List of useful documentation
-- [textattack](https://textattack.readthedocs.io/en/latest/0_get_started/basic-Intro.html)
-- [textattack_example](https://textattack.readthedocs.io/en/latest/2notebook/1_Introduction_and_Transformations.html)
-- `CUDA_VISIBLE_DEVICES=""` this command can be used to run code on the CPU only.

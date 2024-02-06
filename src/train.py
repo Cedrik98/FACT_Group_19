@@ -2,16 +2,15 @@
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
-from src.constants import HF_ACCOUNT, TRAIN_LOGGING_PATH
 from src.dataset import DATASETS
-from src.model import MODELS, save_model_and_tokenizer
+from src.utils.constants import HF_ACCOUNT, TRAIN_LOGGING_PATH
+from src.utils.model import MODELS, save_model_and_tokenizer
 
 
 def compute_metrics():
     """Returns evaluation function."""
-    import numpy as np
-
     import evaluate
+    import numpy as np
 
     metric_acc = evaluate.loading.load("accuracy")
     metric_f1 = evaluate.loading.load("f1")
@@ -213,7 +212,7 @@ if __name__ == "__main__":
         "--batch-size",
         "-bs",
         type=int,
-        default=512,
+        default=8,
         help="Batch size to use during training",
         required=False,
     )

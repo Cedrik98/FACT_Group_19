@@ -24,12 +24,10 @@ def process_experiment_data(dataset: Dataset, args: Namespace, stopwords):
         label = dataset[i].get(args.label_col)
         data.append((example, label))
 
-    categories = list(np.unique([tmp[1] for tmp in data]))
-    print("CATEGORIES", categories)
-
+    categories = list(np.unique([tmp[1] for tmp in data]))    
     if args.num > 0:
-        rng = np.random.default_rng(seed=args.seed_dataset)
+        rng = np.random.default_rng(seed=args.seed)
         rng.shuffle(data)
-        data = data[: args.num]
-
+        data = data[: args.num]    
+    print(len(data))
     return data, categories

@@ -2,11 +2,11 @@
 
 #SBATCH --partition=gpu
 #SBATCH --gpus=1
-#SBATCH --job-name=TrainDebug
+#SBATCH --job-name=RobertaInherentLogistic
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
-#SBATCH --time=00:30:00
-#SBATCH --output=./results/slurm_logs/slurm_output_experiment_debug_%A.out
+#SBATCH --time=12:00:00
+#SBATCH --output=./results/slurm_logs/slurm_output_experiment_roberta_base_uncased_inherent_logistic_%A.out
 
 module purge
 module load 2023
@@ -16,4 +16,4 @@ module load Python/3.11.3-GCCcore-12.3.0
 export HF_DATASETS_CACHE="/scratch-local/scur1035"
 cd $HOME/FACT_Group_19/
 source ./venv/bin/activate
-./run.sh experiment --debug --min-length 0 --batch-size=256
+./run.sh experiment --dataset="md_gender_bias" --model="roberta-base" --method="inherent" --num=1000 --lime-sr=1500 --max-candidates=3

@@ -65,6 +65,7 @@ def load_md_gender_bias_dataset(
     dataset_train_valid = dataset["train"].train_test_split(
         test_size=0.1, stratify_by_column="label", shuffle=True, seed=seed
     )
+    print(len(dataset_test))
     return dataset_train_valid, dataset_test
 
 
@@ -92,6 +93,7 @@ def load_symptom_to_diagnosis_dataset(seed: int, number_of_samples: int):
     dataset_train_valid = dataset["train"].train_test_split(
         test_size=0.1, stratify_by_column="label", shuffle=True, seed=seed
     )
+    
     return dataset_train_valid, dataset_test
 
 
