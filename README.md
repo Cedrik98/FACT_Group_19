@@ -38,7 +38,7 @@ For training, to use the default parameters run the following command:
 ./run.sh train
 ```
 
-All model dataset combinations can be trained with the `--all` flag.
+All model dataset combinations can be trained with the `--all=True` flag.
 
 ### Experiments
 
