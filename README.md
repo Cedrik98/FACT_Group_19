@@ -34,7 +34,6 @@ All possible options and usage can be seen using the following the `--help `
 
 ### Training
 For training, to use the default parameters run the following command:
-
 ```
 ./run.sh train
 ```

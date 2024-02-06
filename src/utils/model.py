@@ -33,6 +33,3 @@ def save_model_and_tokenizer(
     tokenizer.save_pretrained(model_trained_path)
     model.save_pretrained(model_trained_path)
 
-    # Push everything to huggingface
-    tokenizer.push_to_hub(f"{hf_account}/{model_trained_dir}")
-    model.push_to_hub(f"{hf_account}/{model_trained_dir}")
